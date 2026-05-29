@@ -1,0 +1,22 @@
+{"type":"server-started","port":49282,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:49282","screen_dir":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/content","state_dir":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/state"}
+{"type":"screen-added","file":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/content/architecture.html"}
+{"source":"user-event","type":"click","text":"C\n    \n      nes-rust → WASM\n      用 Rust 写模拟核心编译到 WebAssembly，性能最好、帧率最稳。但集成复杂度高，需要自己写 JS 胶水层和渲染管线。","choice":"c","id":null,"timestamp":1780082283379}
+{"source":"user-event","type":"click","text":"C\n    \n      nes-rust → WASM\n      用 Rust 写模拟核心编译到 WebAssembly，性能最好、帧率最稳。但集成复杂度高，需要自己写 JS 胶水层和渲染管线。","choice":"c","id":null,"timestamp":1780082286245}
+{"source":"user-event","type":"click","text":"C\n    \n      nes-rust → WASM\n      用 Rust 写模拟核心编译到 WebAssembly，性能最好、帧率最稳。但集成复杂度高，需要自己写 JS 胶水层和渲染管线。","choice":"c","id":null,"timestamp":1780082286844}
+{"source":"user-event","type":"click","text":"C\n    \n      nes-rust → WASM\n      用 Rust 写模拟核心编译到 WebAssembly，性能最好、帧率最稳。但集成复杂度高，需要自己写 JS 胶水层和渲染管线。","choice":"c","id":null,"timestamp":1780082287028}
+{"source":"user-event","type":"click","text":"C\n    \n      nes-rust → WASM\n      用 Rust 写模拟核心编译到 WebAssembly，性能最好、帧率最稳。但集成复杂度高，需要自己写 JS 胶水层和渲染管线。","choice":"c","id":null,"timestamp":1780082287911}
+{"source":"user-event","type":"click","text":"C\n    \n      nes-rust → WASM\n      用 Rust 写模拟核心编译到 WebAssembly，性能最好、帧率最稳。但集成复杂度高，需要自己写 JS 胶水层和渲染管线。","choice":"c","id":null,"timestamp":1780082288628}
+{"type":"screen-added","file":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/content/waiting.html"}
+{"type":"screen-added","file":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/content/layout.html"}
+{"source":"user-event","type":"click","text":"A\n    \n      经典双区布局\n      上方游戏画面，下方控制面板（标签切换）。简单直观，适合桌面端。","choice":"a","id":null,"timestamp":1780082381346}
+{"source":"user-event","type":"click","text":"B\n    \n      侧边栏布局\n      左侧游戏画面，右侧可折叠侧边栏。ROM 库、键位设置等放在侧边栏，画布不受干扰。","choice":"b","id":null,"timestamp":1780082382462}
+{"source":"user-event","type":"click","text":"C\n    \n      沉浸式布局\n      全屏游戏画面为主，控制栏浮动叠加（类似 YouTube 播放器）。默认简洁，需要时呼出。","choice":"c","id":null,"timestamp":1780082383112}
+{"source":"user-event","type":"click","text":"A\n    \n      经典双区布局\n      上方游戏画面，下方控制面板（标签切换）。简单直观，适合桌面端。","choice":"a","id":null,"timestamp":1780082395079}
+{"source":"user-event","type":"click","text":"B\n    \n      侧边栏布局\n      左侧游戏画面，右侧可折叠侧边栏。ROM 库、键位设置等放在侧边栏，画布不受干扰。","choice":"b","id":null,"timestamp":1780082395712}
+{"source":"user-event","type":"click","text":"C\n    \n      沉浸式布局\n      全屏游戏画面为主，控制栏浮动叠加（类似 YouTube 播放器）。默认简洁，需要时呼出。","choice":"c","id":null,"timestamp":1780082409929}
+{"source":"user-event","type":"click","text":"A\n    \n      经典双区布局\n      上方游戏画面，下方控制面板（标签切换）。简单直观，适合桌面端。","choice":"a","id":null,"timestamp":1780082414946}
+{"type":"screen-added","file":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/content/crossplatform.html"}
+{"type":"screen-added","file":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/content/mobile-gamepad.html"}
+{"type":"screen-added","file":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/content/waiting-2.html"}
+{"type":"screen-added","file":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/content/multiplayer.html"}
+{"type":"screen-added","file":"/Users/fun/Desktop/Demo/.superpowers/brainstorm/19791-1780082065/content/ui-style.html"}

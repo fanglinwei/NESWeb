@@ -1,0 +1,94 @@
+<h2>UI 风格方向 — 二次元像素可爱风</h2>
+<p class="subtitle">NES 本身就是 8-bit 像素美学的代表，加上二次元可爱元素让整体更有个性</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>霓虹像素风 🎀</h3>
+      <p>深色底 + 霓虹粉/紫渐变边框，像素字体标题，发光按钮。类似 8-bit 音乐游戏风格，酷中带可爱。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>软萌像素风 🍰</h3>
+      <p>浅粉/奶油底色 + 圆角像素块，柔和大色块，像可爱的像素贴纸。类似 <em>もじぴったん</em> / 动物森友会像素版。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>复古掌机风 🕹</h3>
+      <p>模拟 Game Boy / GBA 硬体质感，灰白机身配色 + 彩色按钮点缀，按钮做成实体按压感，像一个专门的游戏机。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Style A Preview -->
+<div style="margin-top:32px;">
+  <h3>风格 A — 霓虹像素</h3>
+  <div style="background:#0d0d1a;border:2px solid #ff66aa;border-radius:16px;padding:24px;box-shadow:0 0 24px rgba(255,102,170,0.25), inset 0 0 60px rgba(255,102,170,0.05);">
+    <div style="font-family:'Courier New',monospace;font-size:20px;color:#ff66aa;text-shadow:0 0 10px #ff66aa, 0 0 20px #ff3388;letter-spacing:4px;margin-bottom:16px;">★ NES.EXE ★</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,#2a0a3a,#1a1a3a);border:2px solid #ff66aa;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">🎮</div>
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,#2a0a3a,#1a1a3a);border:2px solid #aa66ff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">💾</div>
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,#2a0a3a,#1a1a3a);border:2px solid #66aaff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;">⚙</div>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <span style="font-family:'Courier New',monospace;font-size:10px;color:#ff66aa;background:rgba(255,102,170,0.15);border:1px solid #ff66aa;padding:4px 10px;border-radius:4px;">▶ RUN</span>
+      <span style="font-family:'Courier New',monospace;font-size:10px;color:#aa66ff;background:rgba(170,102,255,0.15);border:1px solid #aa66ff;padding:4px 10px;border-radius:4px;">SAVE</span>
+      <span style="font-family:'Courier New',monospace;font-size:10px;color:#ff6699;background:rgba(255,102,153,0.15);border:1px solid #ff6699;padding:4px 10px;border-radius:4px;">FULL</span>
+      <span style="font-family:'Courier New',monospace;font-size:10px;color:#ff9966;background:rgba(255,153,102,0.15);border:1px solid #ff9966;padding:4px 10px;border-radius:4px;">★</span>
+    </div>
+    <div style="margin-top:16px;padding:8px 12px;background:rgba(255,102,170,0.08);border-radius:8px;border:1px dashed rgba(255,102,170,0.3);">
+      <span style="font-family:'Courier New',monospace;font-size:10px;color:#ff88bb;">♥ 存档槽 1</span>
+      <span style="font-family:'Courier New',monospace;font-size:10px;color:#666;margin-left:12px;">♥ 存档槽 2</span>
+      <span style="font-family:'Courier New',monospace;font-size:10px;color:#666;margin-left:12px;">♥ 存档槽 3</span>
+    </div>
+  </div>
+</div>
+
+<!-- Style B Preview -->
+<div style="margin-top:24px;">
+  <h3>风格 B — 软萌像素</h3>
+  <div style="background:#fff5f8;border:3px solid #ffbbcc;border-radius:20px;padding:24px;">
+    <div style="font-family:system-ui;font-size:20px;font-weight:800;color:#ff6699;letter-spacing:2px;margin-bottom:16px;">♡ NES PLAY ♡</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <div style="width:64px;height:64px;background:#ffe0ec;border:3px solid #ffaacc;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:3px 3px 0 #ffccdd;">🎮</div>
+      <div style="width:64px;height:64px;background:#ffe8d6;border:3px solid #ffc8a0;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:3px 3px 0 #ffddcc;">💾</div>
+      <div style="width:64px;height:64px;background:#e0ecff;border:3px solid #aaccff;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:3px 3px 0 #ccddff;">⚙</div>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <span style="font-size:11px;color:#ff6699;background:#ffe0ec;border:2px solid #ffaacc;padding:5px 12px;border-radius:20px;font-weight:600;">▶ 开始</span>
+      <span style="font-size:11px;color:#ff9966;background:#ffe8d6;border:2px solid #ffc8a0;padding:5px 12px;border-radius:20px;font-weight:600;">💾 存档</span>
+      <span style="font-size:11px;color:#66aaff;background:#e0ecff;border:2px solid #aaccff;padding:5px 12px;border-radius:20px;font-weight:600;">⛶ 全屏</span>
+    </div>
+    <div style="margin-top:16px;padding:8px 12px;background:#fff;border-radius:14px;border:2px dashed #ffccdd;">
+      <span style="font-size:10px;color:#ff88aa;">♡ 存档 1</span>
+      <span style="font-size:10px;color:#ddd;margin-left:12px;">♡ 存档 2</span>
+    </div>
+  </div>
+</div>
+
+<!-- Style C Preview -->
+<div style="margin-top:24px;">
+  <h3>风格 C — 复古掌机</h3>
+  <div style="background:linear-gradient(180deg,#e8e0d8,#d0c8c0);border:4px solid #999;border-radius:16px;padding:24px;box-shadow:inset 0 2px 8px rgba(255,255,255,0.5), 0 4px 12px rgba(0,0,0,0.3);">
+    <div style="font-family:system-ui;font-size:18px;font-weight:900;color:#555;letter-spacing:3px;margin-bottom:16px;text-align:center;text-shadow:0 1px 0 rgba(255,255,255,0.5);">◆ NES PLAYER ◆</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;justify-content:center;">
+      <div style="width:60px;height:60px;background:#d0c8c0;border:3px solid;border-color:#fff #999 #999 #fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;">🎮</div>
+      <div style="width:60px;height:60px;background:#d0c8c0;border:3px solid;border-color:#fff #999 #999 #fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;">💾</div>
+      <div style="width:60px;height:60px;background:#d0c8c0;border:3px solid;border-color:#fff #999 #999 #fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;">⚙</div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <span style="font-size:10px;font-weight:700;color:#555;background:#d0c8c0;border:3px solid;border-color:#fff #999 #999 #fff;padding:4px 14px;border-radius:6px;">▶ RUN</span>
+      <span style="font-size:10px;font-weight:700;color:#555;background:#d0c8c0;border:3px solid;border-color:#fff #999 #999 #fff;padding:4px 14px;border-radius:6px;">SAVE</span>
+      <span style="font-size:10px;font-weight:700;color:#555;background:#d0c8c0;border:3px solid;border-color:#fff #999 #999 #fff;padding:4px 14px;border-radius:6px;">FULL</span>
+    </div>
+    <div style="margin-top:16px;text-align:center;">
+      <span style="font-size:9px;font-weight:700;color:#888;">POWER</span>
+      <div style="width:20px;height:8px;background:#88cc88;border-radius:3px;margin:4px auto 0;border:2px solid;border-color:#999 #fff #fff #999;"></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<h2>界面布局方案</h2>
+<p class="subtitle">全功能 NES 模拟器，需要合理分区来组织控制项</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>经典双区布局</h3>
+      <p>上方游戏画面，下方控制面板（标签切换）。简单直观，适合桌面端。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>侧边栏布局</h3>
+      <p>左侧游戏画面，右侧可折叠侧边栏。ROM 库、键位设置等放在侧边栏，画布不受干扰。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>沉浸式布局</h3>
+      <p>全屏游戏画面为主，控制栏浮动叠加（类似 YouTube 播放器）。默认简洁，需要时呼出。</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:32px;">
+  <h3>布局 A — 经典双区</h3>
+  <div class="mockup">
+    <div class="mockup-header">NES Emulator</div>
+    <div class="mockup-body" style="display:flex;flex-direction:column;gap:8px;">
+      <div class="placeholder" style="aspect-ratio:256/240;max-width:512px;margin:0 auto;display:flex;align-items:center;justify-content:center;">🎮 游戏画面</div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button class="mock-button" style="font-size:12px;">▶ 运行</button>
+        <button class="mock-button" style="font-size:12px;">⏸ 暂停</button>
+        <button class="mock-button" style="font-size:12px;">🔄 重置</button>
+        <button class="mock-button" style="font-size:12px;">💾 存档</button>
+        <button class="mock-button" style="font-size:12px;">⏻ 全屏</button>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;display:flex;gap:4px;"><button class="mock-button" style="flex:1;font-size:11px;">ROM库</button><button class="mock-button" style="flex:1;font-size:11px;">键位</button><button class="mock-button" style="flex:1;font-size:11px;">滤镜</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:24px;">
+  <h3>布局 C — 沉浸式（浮动控制栏）</h3>
+  <div class="mockup">
+    <div class="mockup-header">NES Emulator</div>
+    <div class="mockup-body" style="position:relative;">
+      <div class="placeholder" style="aspect-ratio:16/9;max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:center;">🎮 全屏游戏画面</div>
+      <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;background:rgba(0,0,0,0.7);border-radius:8px;padding:6px 12px;">
+        <button class="mock-button" style="font-size:11px;">▶</button>
+        <button class="mock-button" style="font-size:11px;">💾</button>
+        <button class="mock-button" style="font-size:11px;">🎮</button>
+        <button class="mock-button" style="font-size:11px;">⚙</button>
+        <button class="mock-button" style="font-size:11px;">⛶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top:24px;">
+  <div class="pros"><h4>我的推荐：A（首版）+ C（后续优化）</h4><ul><li>A 实现最快，所有功能一目了然</li><li>后续可加 C 作为"沉浸模式"切换</li><li>先保证功能完整，再追求体验</li></ul></div>
+  <div class="cons"><h4>B 不太推荐</h4><ul><li>NES 画面接近方形(256:240)，侧边栏浪费横向空间</li></ul></div>
+</div>

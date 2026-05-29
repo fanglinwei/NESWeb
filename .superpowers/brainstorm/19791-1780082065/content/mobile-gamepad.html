@@ -1,0 +1,116 @@
+<h2>移动端虚拟手柄 — 优化方案</h2>
+<p class="subtitle">重新设计方向键和按钮布局，更符合实际操作习惯</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>十字键经典布局</h3>
+      <p>标准十字 D-Pad + A/B 按钮，还原 NES 手柄手感。固定位置，肌肉记忆友好。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>分离式浮动方向</h3>
+      <p>左右手拇指各控制两个独立区域，互不干扰。适合快速操作。</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:24px;">
+  <h3>方案 A — 十字键经典</h3>
+  <div class="mockup" style="max-width:375px;">
+    <div class="mockup-header">Mobile — 经典十字键</div>
+    <div class="mockup-body" style="display:flex;flex-direction:column;gap:0;">
+      <div class="placeholder" style="aspect-ratio:256/240;max-width:100%;display:flex;align-items:center;justify-content:center;font-size:13px;">🎮 游戏画面</div>
+      <div style="background:#1a1a2e;padding:16px 20px;border-radius:4px;">
+        <!-- Main gamepad row: D-pad on left, A/B on right -->
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+
+          <!-- Cross D-Pad -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+            <!-- Up -->
+            <div style="width:48px;height:48px;background:#2a2a3e;border-radius:8px 8px 2px 2px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:16px;">▲</div>
+            <!-- Left + Center + Right -->
+            <div style="display:flex;gap:0;">
+              <div style="width:48px;height:48px;background:#2a2a3e;border-radius:8px 2px 2px 8px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:16px;">◀</div>
+              <div style="width:48px;height:48px;background:#222233;display:flex;align-items:center;justify-content:center;"></div>
+              <div style="width:48px;height:48px;background:#2a2a3e;border-radius:2px 8px 8px 2px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:16px;">▶</div>
+            </div>
+            <!-- Down -->
+            <div style="width:48px;height:48px;background:#2a2a3e;border-radius:2px 2px 8px 8px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:16px;">▼</div>
+          </div>
+
+          <!-- Middle: Select / Start -->
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+            <span style="color:#555;font-size:9px;text-align:center;">SELECT</span>
+            <span style="color:#555;font-size:9px;text-align:center;">START</span>
+          </div>
+
+          <!-- A / B Buttons (B left, A right — classic NES layout) -->
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#8b0000 0%,#cc2222 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:bold;box-shadow:0 4px 8px rgba(200,0,0,0.3);">B</div>
+            <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#8b0000 0%,#cc2222 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:bold;box-shadow:0 4px 8px rgba(200,0,0,0.3);">A</div>
+          </div>
+        </div>
+
+        <!-- Bottom function bar -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid #222;">
+          <span style="color:#555;font-size:10px;">🎮 P1</span>
+          <div style="display:flex;gap:6px;">
+            <span style="color:#555;font-size:10px;background:#222;padding:3px 8px;border-radius:4px;">📂</span>
+            <span style="color:#555;font-size:10px;background:#222;padding:3px 8px;border-radius:4px;">⚙</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:32px;">
+  <h3>方案 B — 分离浮动式</h3>
+  <div class="mockup" style="max-width:375px;">
+    <div class="mockup-header">Mobile — 分区浮动控制</div>
+    <div class="mockup-body" style="display:flex;flex-direction:column;gap:0;">
+      <div class="placeholder" style="aspect-ratio:256/240;max-width:100%;display:flex;align-items:center;justify-content:center;font-size:13px;">🎮 游戏画面</div>
+      <div style="background:#1a1a2e;padding:16px 20px;border-radius:4px;">
+        <div style="display:flex;justify-content:space-between;">
+          <!-- Left zone: D-pad area with label -->
+          <div style="text-align:center;">
+            <span style="color:#555;font-size:9px;">方向</span>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:0;margin-top:4px;">
+              <div style="width:46px;height:46px;background:#2a2a3e;border-radius:10px 10px 3px 3px;display:flex;align-items:center;justify-content:center;color:#bbb;">▲</div>
+              <div style="display:flex;gap:0;">
+                <div style="width:46px;height:46px;background:#2a2a3e;border-radius:10px 3px 3px 10px;display:flex;align-items:center;justify-content:center;color:#bbb;">◀</div>
+                <div style="width:46px;height:46px;background:#1a1a2e;"></div>
+                <div style="width:46px;height:46px;background:#2a2a3e;border-radius:3px 10px 10px 3px;display:flex;align-items:center;justify-content:center;color:#bbb;">▶</div>
+              </div>
+              <div style="width:46px;height:46px;background:#2a2a3e;border-radius:3px 3px 10px 10px;display:flex;align-items:center;justify-content:center;color:#bbb;">▼</div>
+            </div>
+          </div>
+          <!-- Right zone: Action buttons with label -->
+          <div style="text-align:center;">
+            <span style="color:#555;font-size:9px;">动作</span>
+            <div style="display:flex;gap:12px;align-items:flex-end;margin-top:4px;">
+              <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#8b0000,#cc2222);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:bold;">B</div>
+              <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#8b0000,#cc2222);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:bold;">A</div>
+            </div>
+          </div>
+        </div>
+        <!-- Center: Select / Start -->
+        <div style="display:flex;justify-content:center;gap:20px;margin-top:10px;padding-top:8px;border-top:1px solid #222;">
+          <span style="color:#555;font-size:10px;">SELECT</span>
+          <span style="color:#555;font-size:10px;">START</span>
+          <span style="color:#555;font-size:10px;">📂</span>
+          <span style="color:#555;font-size:10px;">⚙</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top:24px;">
+  <div class="pros"><h4>优化点</h4><ul><li><strong>十字键布局：</strong>↑ ↓ ← → 按十字排列，单拇指即可覆盖所有方向，符合直觉</li><li><strong>B左A右：</strong>还原 NES 原版手柄映射，B(攻击/跳跃) 更靠近拇指自然位置</li><li><strong>Select/Start 居中：</strong>不干扰主要操作区，双手拇指都不需要够到</li><li><strong>圆角方向键：</strong>比矩阵方块更贴合拇指滑动，减少误触</li></ul></div>
+  <div class="cons"><h4>后续可调</h4><ul><li>手柄透明度/大小可调节</li><li>支持横竖屏旋转自适应</li><li>可选"无视觉反馈"模式（透明只保留触控区域）</li></ul></div>
+</div>

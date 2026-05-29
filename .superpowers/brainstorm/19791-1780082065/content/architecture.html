@@ -1,0 +1,46 @@
+<h2>NES 模拟核心选型</h2>
+<p class="subtitle">基于"现成库 + 专注 UI 层"的路线，以下是三个主流方案</p>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="a">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>JSNES</h3>
+      <p>纯 JavaScript 实现，GitHub 5k+ stars。API 简单直白，<code>nes.loadRom()</code> + <code>nes.frame()</code> 就能跑。兼容性好但帧率一般（部分游戏掉帧），社区最成熟。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>EmulatorJS</h3>
+      <p>基于 RetroArch/Emscripten 编译到 WebAssembly，兼容性极强。支持 NES/SNES/GBA 等多平台。开箱即用的默认 UI，但自定义能力受限。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>nes-rust → WASM</h3>
+      <p>用 Rust 写模拟核心编译到 WebAssembly，性能最好、帧率最稳。但集成复杂度高，需要自己写 JS 胶水层和渲染管线。</p>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top:24px;">
+  <div class="pros">
+    <h4>我的推荐：A - JSNES</h4>
+    <ul>
+      <li>学习曲线最温和，API 足够简单</li>
+      <li>纯 JS 无编译环节，开发体验流畅</li>
+      <li>社区资源丰富，遇到问题容易搜到答案</li>
+      <li>足够运行大多数常见 ROM</li>
+    </ul>
+  </div>
+  <div class="cons">
+    <h4>注意事项</h4>
+    <ul>
+      <li>部分 Mapper（特殊芯片）支持不完整</li>
+      <li>复杂游戏可能掉帧，但个人学习足够</li>
+      <li>后期如需更高性能可用 nes-rust 替换</li>
+    </ul>
+  </div>
+</div>

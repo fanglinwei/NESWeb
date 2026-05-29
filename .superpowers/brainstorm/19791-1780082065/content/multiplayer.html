@@ -1,0 +1,95 @@
+<h2>跨设备联机 — 架构方案</h2>
+<p class="subtitle">两个设备各玩各的 → 需要网络同步。NES 联机的核心问题是：怎么让两台设备的画面保持一致？</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>输入同步 — 双端各自运行</h3>
+      <p>双方都加载同一个 ROM，只交换控制器输入。WebRTC P2P 直连，延迟极低。需要双方都有 ROM 文件。RetroArch 的经典方案。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>画面串流 — 主机运行，客机投屏</h3>
+      <p>主机一人运行模拟器，把画面+音频实时送到客机，客机只发回按键。类似 Stadia/云游戏模式，但实现更简单。</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:32px;">
+  <h3>方案 A — 输入同步（推荐）</h3>
+  <div style="background:#1a1a2e;border-radius:12px;padding:24px;">
+    <pre style="color:#aaa;font-size:13px;line-height:1.8;margin:0;">
+┌─────────────── 玩家 1 (主机) ───────────────┐
+│  🎮 本地 P1 输入                             │
+│  📡 接收 P2 输入 ←── WebRTC DataChannel ──┐ │
+│  ⚙ 本地 WASM 模拟 (P1+P2 输入)            │ │
+│  🖥 渲染画面 + 🔊 音频                      │ │
+└─────────────────────────────────────────────┘ │
+                                               │
+┌─────────────── 玩家 2 (客机) ───────────────┤
+│  🎮 本地 P2 输入                             │
+│  📡 发送给主机 ─── WebRTC DataChannel ────┘ │
+│  ⚙ 本地 WASM 模拟 (同样 P1+P2 输入)         │
+│  🖥 渲染画面 + 🔊 音频                        │
+└─────────────────────────────────────────────┘
+
+🟢 优势：每帧仅传 ~2 bytes（手柄位），延迟 &lt;10ms
+🔴 风险：双方 ROM 必须完全一致；模拟器必须确定性运行</pre>
+  </div>
+</div>
+
+<div style="margin-top:24px;">
+  <h3>方案 B — 画面串流</h3>
+  <div style="background:#1a1a2e;border-radius:12px;padding:24px;">
+    <pre style="color:#aaa;font-size:13px;line-height:1.8;margin:0;">
+┌───────── 玩家 1 (主机) ────────┐
+│  🎮 本地 P1 输入                │
+│  ⚙ 运行模拟器                   │
+│  📹 Canvas.captureStream()     │
+│  📡 视频流 → WebRTC VideoTrack  │
+└─────────────────────────────────┘
+              │
+              ▼  WebRTC 视频 + 数据通道
+┌───────── 玩家 2 (客机) ────────┐
+│  📺 接收视频流，渲染到 Canvas    │
+│  🎮 本地 P2 输入 → 发回主机     │
+│  ⚙ 客机不运行模拟器             │
+└─────────────────────────────────┘
+
+🟢 优势：客机不需要 ROM；只保证主机模拟正确即可
+🔴 风险：视频流带宽大（~1-5 Mbps），移动网络不友好</pre>
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top:24px;">
+  <div class="pros"><h4>为什么推荐方案 A</h4><ul><li><strong>带宽极小：</strong>每帧 2 bytes，4G/弱 Wi-Fi 都能流畅</li><li><strong>延迟最低：</strong>不经过任何中转，P2P 直连</li><li><strong>架构一致：</strong>双方都走现有 Worker+WASM 管线，不额外引入视频编码</li><li><strong>NES 天然适合：</strong>NES 是确定性系统，相同输入 = 完全相同状态</li></ul></div>
+  <div class="cons"><h4>需要解决</h4><ul><li>帧延迟缓冲（输入到达前暂缓几帧）抵消网络抖动</li><li>ROM 校验（双方启动前校验 ROM 的 SHA-256）</li><li>连接建立需要信令服务器（轻量 WebSocket）</li></ul></div>
+</div>
+
+<div style="margin-top:32px;">
+  <h3>联机流程</h3>
+  <div class="mockup" style="max-width:500px;">
+    <div class="mockup-header">Match Flow — 房间模式</div>
+    <div class="mockup-body" style="display:flex;flex-direction:column;gap:16px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:#cc2222;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">1</div>
+        <div style="flex:1;"><span style="color:#fff;font-size:13px;">主机点击"创建房间"</span><br><span style="color:#666;font-size:11px;">生成 4 位房间码，如 "AX3K"</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:#cc2222;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">2</div>
+        <div style="flex:1;"><span style="color:#fff;font-size:13px;">客机输入房间码加入</span><br><span style="color:#666;font-size:11px;">通过信令服务器建立 WebRTC 连接</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:#cc2222;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">3</div>
+        <div style="flex:1;"><span style="color:#fff;font-size:13px;">ROM 校验</span><br><span style="color:#666;font-size:11px;">双方 ROM 哈希比对，不匹配则主机自动发送 ROM 给客机</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:#22aa44;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">✓</div>
+        <div style="flex:1;"><span style="color:#fff;font-size:13px;">同步启动 — 开始联机</span><br><span style="color:#666;font-size:11px;">主机 P1，客机 P2，帧级同步</span></div>
+      </div>
+    </div>
+  </div>
+</div>

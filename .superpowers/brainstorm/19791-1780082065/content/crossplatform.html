@@ -1,0 +1,75 @@
+<h2>跨端布局方案</h2>
+<p class="subtitle">同时支持 PC 和移动设备，沉浸式布局自适应</p>
+
+<div style="margin-bottom:32px;">
+  <h3>PC 端 — 沉浸式全屏画布</h3>
+  <div class="mockup">
+    <div class="mockup-header">Desktop — 宽屏体验</div>
+    <div class="mockup-body" style="position:relative;">
+      <div class="placeholder" style="aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;">🎮 游戏画面 (256×240 → 等比缩放填满)</div>
+      <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;background:rgba(0,0,0,0.75);border-radius:10px;padding:8px 16px;">
+        <span style="color:#aaa;font-size:11px;">▶</span>
+        <span style="color:#aaa;font-size:11px;">⏸</span>
+        <span style="color:#aaa;font-size:11px;">💾</span>
+        <span style="color:#aaa;font-size:11px;">ROM</span>
+        <span style="color:#aaa;font-size:11px;">⚙</span>
+        <span style="color:#aaa;font-size:11px;">⛶</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-bottom:32px;">
+  <h3>移动端 — 上半画面 + 下半虚拟手柄</h3>
+  <div class="mockup" style="max-width:375px;">
+    <div class="mockup-header">Mobile — 竖屏适配</div>
+    <div class="mockup-body" style="display:flex;flex-direction:column;gap:0;">
+      <div class="placeholder" style="aspect-ratio:256/240;max-width:100%;display:flex;align-items:center;justify-content:center;">🎮 游戏画面</div>
+      <div style="background:#1a1a2e;padding:12px;border-radius:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="display:flex;gap:30px;">
+            <div style="width:60px;height:60px;border-radius:8px;background:#333;display:flex;align-items:center;justify-content:center;color:#888;">←</div>
+            <div style="width:60px;height:60px;border-radius:8px;background:#333;display:flex;align-items:center;justify-content:center;color:#888;">→</div>
+          </div>
+          <div style="display:flex;gap:24px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;color:#888;font-size:11px;">B</div>
+            <div style="width:48px;height:48px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;color:#888;font-size:11px;">A</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;gap:24px;margin-left:20px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;color:#888;">↑</div>
+            <div style="width:48px;height:48px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;color:#888;">↓</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <span style="color:#666;font-size:10px;background:#222;padding:4px 8px;border-radius:4px;">Select</span>
+            <span style="color:#666;font-size:10px;background:#222;padding:4px 8px;border-radius:4px;">Start</span>
+            <span style="color:#666;font-size:10px;background:#222;padding:4px 8px;border-radius:4px;">📂</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>自适应方案（推荐）</h3>
+      <p>同一套代码，CSS/JS 检测设备类型自动切换布局。PC = 键盘提示 + 浮动栏，Mobile = 虚拟手柄 + 底部导航。移动端虚拟手柄可半透明叠加在画面上以最大化画面面积。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>纯触摸方案</h3>
+      <p>移动和 PC 都用虚拟手柄，简单统一但 PC 体验不如键盘直接映射。</p>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top:24px;">
+  <div class="pros"><h4>推荐 A 的理由</h4><ul><li>自适应检测 <code>navigator.maxTouchPoints</code> + 屏幕宽度</li><li>PC 享受键盘/手柄精准操作，移动端有定制触摸手柄</li><li>移动端虚拟手柄可切换透明度和布局</li><li>共用同一套模拟核心，仅输入层差异</li></ul></div>
+  <div class="cons"><h4>移动端额外考量</h4><ul><li>WASM 性能需实测 — 中低端手机可能需降低帧率</li><li>虚拟手柄遮挡问题需可调节方案</li><li>横屏/竖屏切换需处理</li></ul></div>
+</div>
