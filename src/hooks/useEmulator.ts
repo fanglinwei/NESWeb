@@ -2,6 +2,7 @@ import { useRef, useCallback, useEffect } from 'react'
 import type { MainToWorker, WorkerToMain } from '../types/emulator'
 import { NES_WIDTH, NES_HEIGHT } from '../types/emulator'
 import { useEmulatorStore } from '../store/emulatorStore'
+import { putSaveState, getSaveState, getLatestSaveState } from '../utils/db'
 
 export interface UseEmulatorReturn {
   canvasRef: React.RefObject<HTMLCanvasElement | null>
@@ -12,6 +13,8 @@ export interface UseEmulatorReturn {
   reset: () => void
   saveState: (slot: number) => void
   loadState: (slot: number, data: ArrayBuffer) => void
+  loadLatestSaveState: (romName: string) => Promise<void>
+  loadSaveStateById: (id: string) => Promise<void>
 }
 
 export function useEmulator(): UseEmulatorReturn {
@@ -131,6 +134,8 @@ export function useEmulator(): UseEmulatorReturn {
         }
 
         case 'STATE_SAVED': {
+          const romName = romNameRef.current
+          putSaveState(romName, msg.slot, msg.data)
           showNotification(`存档 ${msg.slot} 已保存 ♡`)
           break
         }
@@ -221,6 +226,22 @@ export function useEmulator(): UseEmulatorReturn {
     postToWorker({ type: 'LOAD_STATE', data }, [data])
   }, [postToWorker])
 
+  const loadLatestSaveState = useCallback(async (romName: string) => {
+    const result = await getLatestSaveState(romName)
+    if (result) {
+      postToWorker({ type: 'LOAD_STATE', data: result.data }, [result.data])
+      showNotification('读档成功 ♪')
+    }
+  }, [postToWorker, showNotification])
+
+  const loadSaveStateById = useCallback(async (id: string) => {
+    const result = await getSaveState(id)
+    if (result) {
+      postToWorker({ type: 'LOAD_STATE', data: result.data }, [result.data])
+      showNotification('读档成功 ♪')
+    }
+  }, [postToWorker, showNotification])
+
   return {
     canvasRef,
     loadROM,
@@ -230,5 +251,7 @@ export function useEmulator(): UseEmulatorReturn {
     reset,
     saveState,
     loadState,
+    loadLatestSaveState,
+    loadSaveStateById,
   }
 }
