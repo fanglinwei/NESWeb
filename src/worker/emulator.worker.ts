@@ -36,6 +36,7 @@ try {
   wasm = (await import(/* @vite-ignore */ wasmUrl)) as WasmModule
   wasmExports = await wasm.default()
   wasmReady = true
+  self.postMessage({ type: 'READY' } satisfies WorkerToMain)
 } catch (e) {
   const msg: WorkerToMain = {
     type: 'ERROR',

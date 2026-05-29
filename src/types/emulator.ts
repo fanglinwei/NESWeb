@@ -40,6 +40,7 @@ export interface ROMInfo {
 }
 
 export type WorkerToMain =
+  | { type: 'READY' }
   | { type: 'ROM_LOADED'; info: ROMInfo }
   | { type: 'ROM_ERROR'; error: string }
   | { type: 'FRAME'; video: ArrayBuffer; audio: ArrayBuffer }
