@@ -1,0 +1,83 @@
+/* === CSS Variables: 软萌像素风主题 === */
+:root {
+  --pink: #ff6699;
+  --pink-light: #ffe0ec;
+  --pink-dark: #e05580;
+  --orange: #ff9966;
+  --orange-light: #ffe8d6;
+  --blue: #66aaff;
+  --blue-light: #e0ecff;
+  --bg: #fff5f8;
+  --bg-card: #ffffff;
+  --text: #4a3040;
+  --text-muted: #b8a0a8;
+  --border: #ffbbcc;
+  --border-dashed: #ffccdd;
+  --shadow: 3px 3px 0 rgba(255, 170, 180, 0.3);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --font-pixel: 'Courier New', monospace;
+  --transition: 0.2s ease;
+}
+
+/* === Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+/* === Utility Classes === */
+.pixel-text {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.1em;
+}
+
+.soft-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border: 3px solid var(--border);
+  border-radius: 30px;
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.soft-button:active {
+  transform: scale(0.95);
+  box-shadow: 1px 1px 0 rgba(255, 170, 180, 0.3);
+}
+
+.soft-button--pink { border-color: var(--pink); color: var(--pink); background: var(--pink-light); }
+.soft-button--orange { border-color: var(--orange); color: var(--orange); background: var(--orange-light); }
+.soft-button--blue { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+
+.soft-card {
+  background: var(--bg-card);
+  border: 3px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
