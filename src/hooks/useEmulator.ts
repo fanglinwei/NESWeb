@@ -24,7 +24,6 @@ export function useEmulator(): UseEmulatorReturn {
   const audioWorkletRef = useRef<AudioWorkletNode | null>(null)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const imageDataRef = useRef<ImageData | null>(null)
-  const fpsCounter = useRef({ frames: 0, lastTime: performance.now() })
   const romNameRef = useRef<string>('Unknown')
 
   const {
@@ -65,7 +64,7 @@ export function useEmulator(): UseEmulatorReturn {
       if (!audioInitPromise) {
         audioInitPromise = (async () => {
           if (!audioCtxRef.current) {
-            audioCtxRef.current = new AudioContext({ sampleRate: 44100 })
+            audioCtxRef.current = new AudioContext({ sampleRate: 48000 })
           }
           const actx = audioCtxRef.current
           if (actx.state === 'suspended') {
@@ -117,15 +116,12 @@ export function useEmulator(): UseEmulatorReturn {
             }
           }
 
-          // FPS 计数
           incrementFrame()
-          fpsCounter.current.frames++
-          const now = performance.now()
-          if (now - fpsCounter.current.lastTime >= 1000) {
-            setFps(fpsCounter.current.frames)
-            fpsCounter.current.frames = 0
-            fpsCounter.current.lastTime = now
-          }
+          break
+        }
+
+        case 'FPS': {
+          setFps(msg.fps)
           break
         }
 

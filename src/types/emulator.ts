@@ -46,6 +46,7 @@ export type WorkerToMain =
   | { type: 'FRAME'; video: ArrayBuffer; audio: ArrayBuffer }
   | { type: 'STATE_SAVED'; slot: number; data: ArrayBuffer }
   | { type: 'STATE_LOADED'; ok: true }
+  | { type: 'FPS'; fps: number }
   | { type: 'ERROR'; error: string }
 
 // ============================================================

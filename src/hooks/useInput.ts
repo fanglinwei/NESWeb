@@ -1,17 +1,17 @@
 import { useEffect, useRef } from 'react'
 import { NES_BUTTON } from '../types/emulator'
 
-// 默认键盘映射：方向键 + Z/X（对应 B/A）
+// 默认键盘映射：W/A/S/D 方向，J/K 动作，Shift/Enter 功能
 const DEFAULT_KEY_MAP: Record<string, number> = {
-  'ArrowUp':    NES_BUTTON.UP,
-  'ArrowDown':  NES_BUTTON.DOWN,
-  'ArrowLeft':  NES_BUTTON.LEFT,
-  'ArrowRight': NES_BUTTON.RIGHT,
-  'KeyZ':       NES_BUTTON.B,
-  'KeyX':       NES_BUTTON.A,
+  'KeyW':       NES_BUTTON.UP,
+  'KeyS':       NES_BUTTON.DOWN,
+  'KeyA':       NES_BUTTON.LEFT,
+  'KeyD':       NES_BUTTON.RIGHT,
+  'KeyJ':       NES_BUTTON.B,
+  'KeyK':       NES_BUTTON.A,
   'Enter':      NES_BUTTON.START,
-  'ShiftRight': NES_BUTTON.SELECT,
   'ShiftLeft':  NES_BUTTON.SELECT,
+  'ShiftRight': NES_BUTTON.SELECT,
 }
 
 export function useInput(onInputChange: (controllerState: number) => void): void {

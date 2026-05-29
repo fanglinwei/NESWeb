@@ -5,6 +5,7 @@ import { useGamepad } from './hooks/useGamepad'
 import { useEmulatorStore } from './store/emulatorStore'
 import GameCanvas from './components/GameCanvas'
 import FloatingControls from './components/FloatingControls'
+import FPSDisplay from './components/FPSDisplay'
 import NotificationToast from './components/NotificationToast'
 import './App.css'
 
@@ -111,6 +112,9 @@ export default function App() {
           <GameCanvas canvasRef={canvasRef} onDropROM={handleDropROM} />
         </div>
       )}
+
+      {/* FPS 显示 */}
+      <FPSDisplay />
 
       {/* 浮动控制栏 */}
       <FloatingControls
