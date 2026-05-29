@@ -21,6 +21,7 @@ export function useEmulator(): UseEmulatorReturn {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const workerRef = useRef<Worker | null>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
+  const audioWorkletRef = useRef<AudioWorkletNode | null>(null)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const imageDataRef = useRef<ImageData | null>(null)
   const fpsCounter = useRef({ frames: 0, lastTime: performance.now() })
@@ -57,6 +58,24 @@ export function useEmulator(): UseEmulatorReturn {
       { type: 'module' },
     )
 
+    // 初始化 AudioWorklet（惰性，首次收到 FRAME 时触发）
+    const initAudio = async () => {
+      if (audioWorkletRef.current) return
+
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new AudioContext({ sampleRate: 44100 })
+      }
+      const actx = audioCtxRef.current
+      if (actx.state === 'suspended') {
+        await actx.resume()
+      }
+
+      await actx.audioWorklet.addModule('/audio-processor.js')
+      const workletNode = new AudioWorkletNode(actx, 'nes-audio-processor')
+      workletNode.connect(actx.destination)
+      audioWorkletRef.current = workletNode
+    }
+
     worker.onmessage = (e: MessageEvent<WorkerToMain>) => {
       const msg = e.data
 
@@ -85,23 +104,12 @@ export function useEmulator(): UseEmulatorReturn {
             scaleCanvas(canvas)
           }
 
-          // 播放音频
+          // 播放音频（AudioWorklet 低延迟）
           if (msg.audio.byteLength > 0) {
-            if (!audioCtxRef.current) {
-              audioCtxRef.current = new AudioContext({ sampleRate: 44100 })
-            }
-            const actx = audioCtxRef.current
-            if (actx.state === 'suspended') {
-              actx.resume()
-            }
+            initAudio()
             const samples = new Float32Array(msg.audio)
-            if (samples.length > 0) {
-              const audioBuffer = actx.createBuffer(1, samples.length, 44100)
-              audioBuffer.getChannelData(0).set(samples)
-              const source = actx.createBufferSource()
-              source.buffer = audioBuffer
-              source.connect(actx.destination)
-              source.start()
+            if (samples.length > 0 && audioWorkletRef.current) {
+              audioWorkletRef.current.port.postMessage(samples)
             }
           }
 

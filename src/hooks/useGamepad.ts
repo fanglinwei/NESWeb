@@ -44,9 +44,11 @@ function getButtonState(gamepad: Gamepad): number {
   return state
 }
 
-export function useGamepad(enabled: boolean): void {
+export function useGamepad(enabled: boolean, onInputChange: (controllerState: number) => void): void {
   const prevStateRef = useRef(0)
   const animFrameRef = useRef(0)
+  const onInputRef = useRef(onInputChange)
+  onInputRef.current = onInputChange
 
   useEffect(() => {
     if (!enabled) return
@@ -65,23 +67,22 @@ export function useGamepad(enabled: boolean): void {
         controllerState |= getButtonState(gamepad) | getStickState(gamepad)
       }
 
-      // 只在状态变化时发送事件（避免每帧都触发）
+      // 只在状态变化时通知（避免每帧都触发）
       if (controllerState !== prevStateRef.current) {
         prevStateRef.current = controllerState
-        window.dispatchEvent(new CustomEvent('nes-input', { detail: controllerState }))
+        onInputRef.current(controllerState)
       }
 
       animFrameRef.current = requestAnimationFrame(poll)
     }
 
     // 监听手柄连接/断开
-    const handleConnect = () => { /* Gamepad connected */ }
     const handleDisconnect = () => {
       prevStateRef.current = 0
-      window.dispatchEvent(new CustomEvent('nes-input', { detail: 0 }))
+      onInputRef.current(0)
     }
 
-    window.addEventListener('gamepadconnected', handleConnect)
+    window.addEventListener('gamepadconnected', () => {})
     window.addEventListener('gamepaddisconnected', handleDisconnect)
 
     // 开始轮询
@@ -90,7 +91,6 @@ export function useGamepad(enabled: boolean): void {
     return () => {
       running = false
       cancelAnimationFrame(animFrameRef.current)
-      window.removeEventListener('gamepadconnected', handleConnect)
       window.removeEventListener('gamepaddisconnected', handleDisconnect)
     }
   }, [enabled])

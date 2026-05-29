@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react'
 import { useEmulator } from './hooks/useEmulator'
 import { useInput } from './hooks/useInput'
+import { useGamepad } from './hooks/useGamepad'
 import { useEmulatorStore } from './store/emulatorStore'
 import GameCanvas from './components/GameCanvas'
 import FloatingControls from './components/FloatingControls'
@@ -20,12 +21,28 @@ export default function App() {
   const status = useEmulatorStore((s) => s.status)
   const setControlsVisible = useEmulatorStore((s) => s.setControlsVisible)
 
-  // 键盘输入 → 自定义事件（useEmulator 内部监听此事件转发给 Worker）
-  const handleInput = useCallback((state: number) => {
-    window.dispatchEvent(new CustomEvent('nes-input', { detail: state }))
+  // 键盘 + 手柄输入合并
+  // 两个输入源各自维护自己的状态，合并后统一发送
+  const kbStateRef = useRef(0)
+  const gpStateRef = useRef(0)
+
+  const dispatchMergedInput = useCallback(() => {
+    const merged = kbStateRef.current | gpStateRef.current
+    window.dispatchEvent(new CustomEvent('nes-input', { detail: merged }))
   }, [])
 
-  useInput(handleInput)
+  const handleKeyboardInput = useCallback((state: number) => {
+    kbStateRef.current = state
+    dispatchMergedInput()
+  }, [dispatchMergedInput])
+
+  const handleGamepadInput = useCallback((state: number) => {
+    gpStateRef.current = state
+    dispatchMergedInput()
+  }, [dispatchMergedInput])
+
+  useInput(handleKeyboardInput)
+  useGamepad(true, handleGamepadInput)
 
   // 全屏切换
   const handleFullscreen = useCallback(() => {
