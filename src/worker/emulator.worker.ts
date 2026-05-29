@@ -119,6 +119,8 @@ function runFrameLoop(): void {
   frameTimeout = setTimeout(() => {
     if (!running) return
 
+    const frameNow = performance.now()
+
     try {
       // 应用输入
       applyControllerInput(controller1Bits)
@@ -141,12 +143,12 @@ function runFrameLoop(): void {
 
       // FPS 统计
       fpsFrameCount++
-      if (now - fpsLastTime >= 1000) {
+      if (frameNow - fpsLastTime >= 1000) {
         const fps = Math.round(
-          fpsFrameCount / ((now - fpsLastTime) / 1000)
+          fpsFrameCount / ((frameNow - fpsLastTime) / 1000)
         )
         fpsFrameCount = 0
-        fpsLastTime = now
+        fpsLastTime = frameNow
         self.postMessage({ type: 'FPS', fps } satisfies WorkerToMain)
       }
 
@@ -166,7 +168,11 @@ function runFrameLoop(): void {
         type: 'ERROR',
         error: `Frame error: ${String(e)}`,
       } satisfies WorkerToMain)
+      return
     }
+
+    // 调度下一帧
+    runFrameLoop()
   }, delay)
 }
 
