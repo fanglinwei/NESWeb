@@ -5,6 +5,7 @@ export const get_audio_len: () => number;
 export const get_audio_ptr: () => number;
 export const get_framebuffer_len: () => number;
 export const get_framebuffer_ptr: () => number;
+export const get_pc: () => number;
 export const init: () => void;
 export const load_rom: (a: number, b: number) => number;
 export const load_state: (a: number, b: number) => number;

@@ -36,6 +36,15 @@ export function get_framebuffer_ptr() {
     return ret >>> 0;
 }
 
+/**
+ * Get the CPU program counter (for debugging)
+ * @returns {number}
+ */
+export function get_pc() {
+    const ret = wasm.get_pc();
+    return ret;
+}
+
 export function init() {
     wasm.init();
 }

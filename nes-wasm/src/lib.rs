@@ -134,6 +134,14 @@ pub fn run_frame(c1: u8, c2: u8) -> *const u8 {
     get_framebuffer_ptr()
 }
 
+/// Get the CPU program counter (for debugging)
+#[wasm_bindgen]
+pub fn get_pc() -> u16 {
+    unsafe {
+        NES.as_ref().map_or(0, |nes| nes.get_program_counter())
+    }
+}
+
 /// Pointer to the RGBA framebuffer in WASM memory.
 #[wasm_bindgen]
 pub fn get_framebuffer_ptr() -> *const u8 {

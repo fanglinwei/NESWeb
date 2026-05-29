@@ -21,6 +21,11 @@ export function get_framebuffer_len(): number;
  */
 export function get_framebuffer_ptr(): number;
 
+/**
+ * Get the CPU program counter (for debugging)
+ */
+export function get_pc(): number;
+
 export function init(): void;
 
 /**
@@ -61,6 +66,7 @@ export interface InitOutput {
     readonly get_audio_ptr: () => number;
     readonly get_framebuffer_len: () => number;
     readonly get_framebuffer_ptr: () => number;
+    readonly get_pc: () => number;
     readonly init: () => void;
     readonly load_rom: (a: number, b: number) => number;
     readonly load_state: (a: number, b: number) => number;

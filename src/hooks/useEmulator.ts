@@ -94,6 +94,7 @@ export function useEmulator(): UseEmulatorReturn {
               canvas.height = NES_HEIGHT
               ctxRef.current = canvas.getContext('2d')!
               imageDataRef.current = ctxRef.current.createImageData(NES_WIDTH, NES_HEIGHT)
+              console.log('[Main] Canvas 2D context initialized')
             }
 
             const ctx = ctxRef.current
@@ -102,6 +103,32 @@ export function useEmulator(): UseEmulatorReturn {
             imageData.data.set(src)
             ctx.putImageData(imageData, 0, 0)
             scaleCanvas(canvas)
+
+            // 诊断：采样几个像素的 RGBA 值
+            if (fpsCounter.current.frames === 0) {
+              const samples = []
+              for (let y = 0; y < 240; y += 60) {
+                for (let x = 0; x < 256; x += 64) {
+                  const i = (y * 256 + x) * 4
+                  samples.push(`(${x},${y})=[${imageData.data[i]},${imageData.data[i+1]},${imageData.data[i+2]},${imageData.data[i+3]}]`)
+                }
+              }
+              console.log('[Main] Pixel samples:', samples.slice(0, 10).join(' '))
+              // 检查非零字节的分布
+              let rCount = 0, gCount = 0, bCount = 0, aCount = 0
+              let rSum = 0, gSum = 0, bSum = 0
+              for (let i = 0; i < imageData.data.length; i += 4) {
+                if (imageData.data[i] > 0) { rCount++; rSum += imageData.data[i] }
+                if (imageData.data[i+1] > 0) { gCount++; gSum += imageData.data[i+1] }
+                if (imageData.data[i+2] > 0) { bCount++; bSum += imageData.data[i+2] }
+                if (imageData.data[i+3] > 0) aCount++
+              }
+              console.log(`[Main] Pixel stats: R nonZero=${rCount} avg=${(rSum/rCount).toFixed(1)}, ` +
+                `G nonZero=${gCount} avg=${(gSum/gCount).toFixed(1)}, ` +
+                `B nonZero=${bCount} avg=${(bSum/bCount).toFixed(1)}, A nonZero=${aCount}`)
+            }
+          } else {
+            console.warn('[Main] FRAME received but canvasRef is null!')
           }
 
           // 播放音频（AudioWorklet 低延迟）
