@@ -18,8 +18,13 @@ class NESAudioProcessor extends AudioWorkletProcessor {
         for (let i = 0; i < samples.length; i++) {
           this.buffer[this.writeIndex] = samples[i]
           this.writeIndex = (this.writeIndex + 1) & (BUFFER_SIZE - 1)
+          // 缓冲区满时丢弃最旧样本，避免覆盖未读数据
+          if (this.available >= BUFFER_SIZE) {
+            this.readIndex = (this.readIndex + 1) & (BUFFER_SIZE - 1)
+          } else {
+            this.available++
+          }
         }
-        this.available = Math.min(this.available + samples.length, BUFFER_SIZE)
       }
     }
   }

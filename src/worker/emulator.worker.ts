@@ -77,7 +77,6 @@ function applyControllerInput(c1: number): void {
 let running = false
 let controller1Bits = 0
 let frameTimeout: ReturnType<typeof setTimeout> | null = null
-let frameCount = 0
 
 // Worker ready
 self.postMessage({ type: 'READY' } satisfies WorkerToMain)
@@ -110,16 +109,6 @@ function runFrameLoop(): void {
     const audioView = new Float32Array(audioBuffer)
     audioView.set(audioSamples)
 
-    // 诊断：前几帧采样
-    if (frameCount === 0 || frameCount === 30 || frameCount === 60 || frameCount === 120) {
-      const colors = new Set<number>()
-      for (let i = 0; i < Math.min(videoView.length, 4000); i += 4) {
-        colors.add((videoView[i] << 16) | (videoView[i+1] << 8) | videoView[i+2])
-      }
-      console.log(`[Worker] Frame ${frameCount}: unique colors: ${colors.size}, pixel[0]=R${videoView[0]}G${videoView[1]}B${videoView[2]}`)
-    }
-    frameCount++
-
     // 发送帧数据
     const msg: WorkerToMain = {
       type: 'FRAME',
@@ -145,16 +134,8 @@ function runFrameLoop(): void {
 // ============================================================
 // 消息处理
 // ============================================================
-function arrayBufferToString(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer)
-  const CHUNK = 8192
-  let str = ''
-  for (let i = 0; i < bytes.length; i += CHUNK) {
-    const chunk = bytes.slice(i, Math.min(i + CHUNK, bytes.length))
-    str += String.fromCharCode(...chunk)
-  }
-  return str
-}
+// 注：目前仅支持单玩家（controller1）。
+// controller2 将在联机功能（Phase 6）中启用。
 
 self.onmessage = (e: MessageEvent<MainToWorker>) => {
   const msg = e.data
@@ -162,18 +143,18 @@ self.onmessage = (e: MessageEvent<MainToWorker>) => {
   switch (msg.type) {
     case 'LOAD_ROM': {
       try {
-        const rom = new Uint8Array(msg.rom)
-        const romString = arrayBufferToString(msg.rom)
-        nes.loadROM(romString)
+        // JSNES 原生支持 ArrayBuffer，无需转换为字符串
+        nes.loadROM(msg.rom)
 
+        const rom = new Uint8Array(msg.rom)
         const info = parseINESHeader(rom)
         self.postMessage({ type: 'ROM_LOADED', info } satisfies WorkerToMain)
 
-        // 自动启动
+        // 自动启动 / 热切换 ROM 时重置输入状态
+        prevController1 = 0
+        controller1Bits = 0
         if (!running) {
           running = true
-          frameCount = 0
-          prevController1 = 0
           runFrameLoop()
         }
       } catch (err) {
@@ -216,6 +197,9 @@ self.onmessage = (e: MessageEvent<MainToWorker>) => {
         const json = decoder.decode(new Uint8Array(msg.data))
         const state = JSON.parse(json)
         nes.fromJSON(state)
+        // 重置输入状态以匹配加载的状态，避免边沿检测误判
+        prevController1 = 0
+        controller1Bits = 0
         self.postMessage({ type: 'STATE_LOADED', ok: true } satisfies WorkerToMain)
       } catch (err) {
         self.postMessage({

@@ -33,24 +33,7 @@ export function useEmulator(): UseEmulatorReturn {
   } = useEmulatorStore()
 
   // ============================================================
-  // Canvas 缩放
-  // ============================================================
-  function scaleCanvas(canvas: HTMLCanvasElement): void {
-    const parent = canvas.parentElement
-    if (!parent) return
-
-    const parentW = parent.clientWidth
-    const parentH = parent.clientHeight
-    const scale = Math.min(parentW / NES_WIDTH, parentH / NES_HEIGHT)
-    const displayW = Math.floor(NES_WIDTH * scale)
-    const displayH = Math.floor(NES_HEIGHT * scale)
-
-    canvas.style.width = `${displayW}px`
-    canvas.style.height = `${displayH}px`
-  }
-
-  // ============================================================
-  // 初始化 Worker
+  // 初始化 Worker、ResizeObserver、AudioWorklet
   // ============================================================
   useEffect(() => {
     const worker = new Worker(
@@ -58,22 +41,43 @@ export function useEmulator(): UseEmulatorReturn {
       { type: 'module' },
     )
 
+    // ResizeObserver 替代每帧读取 clientWidth/Height，避免强制 layout
+    const resizeObserver = new ResizeObserver(() => {
+      const canvas = canvasRef.current
+      if (!canvas) return
+      const parent = canvas.parentElement
+      if (!parent) return
+      const parentW = parent.clientWidth
+      const parentH = parent.clientHeight
+      const scale = Math.min(parentW / NES_WIDTH, parentH / NES_HEIGHT)
+      canvas.style.width = `${Math.floor(NES_WIDTH * scale)}px`
+      canvas.style.height = `${Math.floor(NES_HEIGHT * scale)}px`
+    })
+    // 观察 #root 容器（游戏画面的父元素链的根）
+    const root = document.getElementById('root')
+    if (root) resizeObserver.observe(root)
+
     // 初始化 AudioWorklet（惰性，首次收到 FRAME 时触发）
-    const initAudio = async () => {
-      if (audioWorkletRef.current) return
+    let audioInitPromise: Promise<void> | null = null
 
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new AudioContext({ sampleRate: 44100 })
+    const initAudio = (): Promise<void> => {
+      if (audioWorkletRef.current) return Promise.resolve()
+      if (!audioInitPromise) {
+        audioInitPromise = (async () => {
+          if (!audioCtxRef.current) {
+            audioCtxRef.current = new AudioContext({ sampleRate: 44100 })
+          }
+          const actx = audioCtxRef.current
+          if (actx.state === 'suspended') {
+            await actx.resume()
+          }
+          await actx.audioWorklet.addModule('/audio-processor.js')
+          const workletNode = new AudioWorkletNode(actx, 'nes-audio-processor')
+          workletNode.connect(actx.destination)
+          audioWorkletRef.current = workletNode
+        })()
       }
-      const actx = audioCtxRef.current
-      if (actx.state === 'suspended') {
-        await actx.resume()
-      }
-
-      await actx.audioWorklet.addModule('/audio-processor.js')
-      const workletNode = new AudioWorkletNode(actx, 'nes-audio-processor')
-      workletNode.connect(actx.destination)
-      audioWorkletRef.current = workletNode
+      return audioInitPromise
     }
 
     worker.onmessage = (e: MessageEvent<WorkerToMain>) => {
@@ -94,7 +98,6 @@ export function useEmulator(): UseEmulatorReturn {
               canvas.height = NES_HEIGHT
               ctxRef.current = canvas.getContext('2d')!
               imageDataRef.current = ctxRef.current.createImageData(NES_WIDTH, NES_HEIGHT)
-              console.log('[Main] Canvas 2D context initialized')
             }
 
             const ctx = ctxRef.current
@@ -102,41 +105,15 @@ export function useEmulator(): UseEmulatorReturn {
             const src = new Uint8ClampedArray(msg.video)
             imageData.data.set(src)
             ctx.putImageData(imageData, 0, 0)
-            scaleCanvas(canvas)
-
-            // 诊断：采样几个像素的 RGBA 值
-            if (fpsCounter.current.frames === 0) {
-              const samples = []
-              for (let y = 0; y < 240; y += 60) {
-                for (let x = 0; x < 256; x += 64) {
-                  const i = (y * 256 + x) * 4
-                  samples.push(`(${x},${y})=[${imageData.data[i]},${imageData.data[i+1]},${imageData.data[i+2]},${imageData.data[i+3]}]`)
-                }
-              }
-              console.log('[Main] Pixel samples:', samples.slice(0, 10).join(' '))
-              // 检查非零字节的分布
-              let rCount = 0, gCount = 0, bCount = 0, aCount = 0
-              let rSum = 0, gSum = 0, bSum = 0
-              for (let i = 0; i < imageData.data.length; i += 4) {
-                if (imageData.data[i] > 0) { rCount++; rSum += imageData.data[i] }
-                if (imageData.data[i+1] > 0) { gCount++; gSum += imageData.data[i+1] }
-                if (imageData.data[i+2] > 0) { bCount++; bSum += imageData.data[i+2] }
-                if (imageData.data[i+3] > 0) aCount++
-              }
-              console.log(`[Main] Pixel stats: R nonZero=${rCount} avg=${(rSum/rCount).toFixed(1)}, ` +
-                `G nonZero=${gCount} avg=${(gSum/gCount).toFixed(1)}, ` +
-                `B nonZero=${bCount} avg=${(bSum/bCount).toFixed(1)}, A nonZero=${aCount}`)
-            }
-          } else {
-            console.warn('[Main] FRAME received but canvasRef is null!')
           }
 
           // 播放音频（AudioWorklet 低延迟）
           if (msg.audio.byteLength > 0) {
-            initAudio()
             const samples = new Float32Array(msg.audio)
-            if (samples.length > 0 && audioWorkletRef.current) {
-              audioWorkletRef.current.port.postMessage(samples)
+            if (samples.length > 0) {
+              initAudio().then(() => {
+                audioWorkletRef.current?.port.postMessage(samples)
+              })
             }
           }
 
@@ -206,6 +183,7 @@ export function useEmulator(): UseEmulatorReturn {
     window.addEventListener('nes-input', handleInput)
 
     return () => {
+      resizeObserver.disconnect()
       window.removeEventListener('nes-input', handleInput)
       worker.terminate()
     }
