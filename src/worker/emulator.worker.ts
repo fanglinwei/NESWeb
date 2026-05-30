@@ -18,16 +18,28 @@ let framebufferRGBA = new Uint8ClampedArray(VIDEO_SIZE)
 const audioSamples: number[] = []
 
 // ============================================================
-// JSNES 颜色转换：Uint32Array (0xRRGGBB) → RGBA Uint8ClampedArray
 // ============================================================
-// JSNES palette.js 中颜色以 0xRRGGBB 格式存储（24-bit）。
-// Uint32Array 在 JS 层面已处理 endianness，buffer[i] 返回 JS Number。
-// 提取 RGB 后直接写入 Canvas ImageData（sRGB 色彩空间）。
+// 标准 NES NTSC 调色板（64 色，0xRRGGBB）
+// 来源：基于 NESdev wiki 标准测量值，广泛用于 FCEUX/Nestopia/Mesen
+// JSNES 默认调色板与标准差异较大，导致游戏画面偏色
+// ============================================================
+const STANDARD_NES_PALETTE = new Uint32Array([
+  0x666666, 0x002A88, 0x1412A7, 0x3B00A4, 0x5C007E, 0x6E0040, 0x6C0600, 0x561D00,
+  0x333500, 0x0B4800, 0x005200, 0x004F08, 0x00404D, 0x000000, 0x000000, 0x000000,
+  0xADADAD, 0x155FD9, 0x4240FF, 0x7527FE, 0xA01ACC, 0xB71E7B, 0xB53120, 0x994E00,
+  0x6B6D00, 0x388700, 0x0C9300, 0x008F32, 0x007C8D, 0x000000, 0x000000, 0x000000,
+  0xFFFFFF, 0x64B0FF, 0x9290FF, 0xC676FF, 0xF36AFF, 0xFE6ECC, 0xFE8170, 0xEA9E22,
+  0xBCBE00, 0x88D800, 0x5CE430, 0x45E082, 0x48CDDE, 0x4F4F4F, 0x000000, 0x000000,
+  0xFFFFFF, 0xC0DFFF, 0xD3D2FF, 0xE8C8FF, 0xFBC2FF, 0xFEC4EA, 0xFECCC5, 0xF7D8A5,
+  0xE4E594, 0xCFEF96, 0xBDF4AB, 0xB3F3CC, 0xB5EBF2, 0xB8B8B8, 0x000000, 0x000000,
+])
+
+// JSNES 颜色转换：Uint32Array (0xRRGGBB) → RGBA Uint8ClampedArray
 function handleJSNESFrame(buffer: Uint32Array): void {
   const dst = framebufferRGBA
   for (let i = 0; i < buffer.length; i++) {
     const color = buffer[i]
-    const offset = i << 2 // i * 4
+    const offset = i << 2
     dst[offset]     = (color >>> 16) & 0xff  // R
     dst[offset + 1] = (color >>> 8) & 0xff   // G
     dst[offset + 2] = color & 0xff           // B
@@ -46,8 +58,15 @@ function handleJSNESAudio(left: number, right: number): void {
 const nes = new NES({
   onFrame: handleJSNESFrame,
   onAudioSample: handleJSNESAudio,
-  // 使用默认 sampleRate: 48000 — AudioContext 将匹配此值
 })
+
+// 替换 JSNES 默认调色板为标准 NES NTSC 调色板
+// JSNES 内置色板与标准 NES 颜色差异较大（如索引 $21 是橙色而非浅蓝）
+// 这里用 NESdev 社区标准色板覆盖，确保游戏画面颜色准确
+const ptable = (nes as any).ppu.paletteTable
+ptable.curTable = STANDARD_NES_PALETTE
+ptable.makeTables()
+ptable.setEmphasis(0)
 
 // ============================================================
 // ROM 信息解析 (iNES header)
