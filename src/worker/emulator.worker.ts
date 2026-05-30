@@ -22,18 +22,40 @@ const audioSamples: number[] = []
 // ============================================================
 // JSNES palette.js 中颜色以 0xRRGGBB 格式存储（24-bit）。
 // 例如 0x525252 → R=0x52, G=0x52, B=0x52 (NES 通用背景色灰)
-// 例如 0xB40000 → R=0xB4, G=0x00, B=0x00 (深红)
-// 例如 0x0019BC → R=0x00, G=0x19, B=0xBC (NES 蓝色)
+let firstFrameSampled = false
+
 function handleJSNESFrame(buffer: Uint32Array): void {
   const dst = framebufferRGBA
   const len = buffer.length
+
+  // 诊断：首帧采样关键区域像素
+  if (!firstFrameSampled) {
+    firstFrameSampled = true
+    const checkPixels = [
+      { y: 30, x: 120, label: '天空' },
+      { y: 190, x: 80, label: '地面' },
+      { y: 30, x: 130, label: 'Mario区域' },
+      { y: 60, x: 160, label: '灌木丛' },
+      { y: 80, x: 56, label: '砖块区域' },
+    ]
+    for (const p of checkPixels) {
+      const idx = p.y * 256 + p.x
+      const raw = buffer[idx]
+      console.log(
+        `[Worker color] ${p.label} (${p.x},${p.y}): ` +
+        `raw=0x${raw.toString(16).padStart(8, '0')} → ` +
+        `R=${(raw >>> 16) & 0xff} G=${(raw >>> 8) & 0xff} B=${raw & 0xff}`,
+      )
+    }
+  }
+
   for (let i = 0; i < len; i++) {
     const color = buffer[i]
     const offset = i << 2 // i * 4
-    dst[offset]     = (color >>> 16) & 0xff  // R — bits 23-16
-    dst[offset + 1] = (color >>> 8) & 0xff   // G — bits 15-8
-    dst[offset + 2] = color & 0xff           // B — bits 7-0
-    dst[offset + 3] = 0xff                   // A — 不透明
+    dst[offset]     = (color >>> 16) & 0xff  // R
+    dst[offset + 1] = (color >>> 8) & 0xff   // G
+    dst[offset + 2] = color & 0xff           // B
+    dst[offset + 3] = 0xff                   // A
   }
 }
 
