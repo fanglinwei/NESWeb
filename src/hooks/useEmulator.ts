@@ -95,8 +95,11 @@ export function useEmulator(): UseEmulatorReturn {
             if (!ctxRef.current) {
               canvas.width = NES_WIDTH
               canvas.height = NES_HEIGHT
-              ctxRef.current = canvas.getContext('2d')!
-              imageDataRef.current = ctxRef.current.createImageData(NES_WIDTH, NES_HEIGHT)
+              // sRGB 色彩空间确保 NES 调色板颜色在所有显示器上准确
+              ctxRef.current = canvas.getContext('2d', { colorSpace: 'srgb' })!
+              imageDataRef.current = ctxRef.current.createImageData(NES_WIDTH, NES_HEIGHT, {
+                colorSpace: 'srgb',
+              })
             }
 
             const ctx = ctxRef.current

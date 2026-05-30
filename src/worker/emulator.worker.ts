@@ -21,35 +21,11 @@ const audioSamples: number[] = []
 // JSNES 颜色转换：Uint32Array (0xRRGGBB) → RGBA Uint8ClampedArray
 // ============================================================
 // JSNES palette.js 中颜色以 0xRRGGBB 格式存储（24-bit）。
-// 例如 0x525252 → R=0x52, G=0x52, B=0x52 (NES 通用背景色灰)
-let firstFrameSampled = false
-
+// Uint32Array 在 JS 层面已处理 endianness，buffer[i] 返回 JS Number。
+// 提取 RGB 后直接写入 Canvas ImageData（sRGB 色彩空间）。
 function handleJSNESFrame(buffer: Uint32Array): void {
   const dst = framebufferRGBA
-  const len = buffer.length
-
-  // 诊断：首帧采样关键区域像素
-  if (!firstFrameSampled) {
-    firstFrameSampled = true
-    const checkPixels = [
-      { y: 30, x: 120, label: '天空' },
-      { y: 190, x: 80, label: '地面' },
-      { y: 30, x: 130, label: 'Mario区域' },
-      { y: 60, x: 160, label: '灌木丛' },
-      { y: 80, x: 56, label: '砖块区域' },
-    ]
-    for (const p of checkPixels) {
-      const idx = p.y * 256 + p.x
-      const raw = buffer[idx]
-      console.log(
-        `[Worker color] ${p.label} (${p.x},${p.y}): ` +
-        `raw=0x${raw.toString(16).padStart(8, '0')} → ` +
-        `R=${(raw >>> 16) & 0xff} G=${(raw >>> 8) & 0xff} B=${raw & 0xff}`,
-      )
-    }
-  }
-
-  for (let i = 0; i < len; i++) {
+  for (let i = 0; i < buffer.length; i++) {
     const color = buffer[i]
     const offset = i << 2 // i * 4
     dst[offset]     = (color >>> 16) & 0xff  // R
