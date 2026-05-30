@@ -63,7 +63,7 @@ const nes = new NES({
 // 替换 JSNES 默认调色板为标准 NES NTSC 调色板
 // JSNES 内置色板与标准 NES 颜色差异较大（如索引 $21 是橙色而非浅蓝）
 // 这里用 NESdev 社区标准色板覆盖，确保游戏画面颜色准确
-const ptable = (nes as any).ppu.paletteTable
+const ptable = (nes as any).ppu.palTable
 ptable.curTable = STANDARD_NES_PALETTE
 ptable.makeTables()
 ptable.setEmphasis(0)
