@@ -223,7 +223,6 @@ export default function App() {
                 onReset={reset}
                 onSaveState={saveState}
                 onFullscreen={handleFullscreen}
-                onTouchInput={handleTouchInput}
               />
             </div>
           </div>

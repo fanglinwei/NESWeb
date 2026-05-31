@@ -1,4 +1,5 @@
 import { useEmulatorStore } from '../store/emulatorStore'
+import './FloatingControls.css'
 
 interface FloatingControlsProps {
   onPause: () => void
@@ -22,33 +23,62 @@ export default function FloatingControls({
 
   return (
     <div
-      style={{
-        position: 'absolute',
-        bottom: '20px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        display: 'flex',
-        gap: '8px',
-        padding: '10px 18px',
-        background: 'rgba(255, 255, 255, 0.85)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderRadius: '30px',
-        border: '3px solid var(--border)',
-        boxShadow: 'var(--shadow)',
-        opacity: controlsVisible ? 1 : 0,
-        transition: 'opacity 0.3s ease',
-        zIndex: 10,
-      }}
+      className="floating-controls"
+      style={{ opacity: controlsVisible ? 1 : 0 }}
     >
-      {status === 'running' ? (
-        <button className="soft-button soft-button--pink" onClick={onPause}>⏸</button>
-      ) : (
-        <button className="soft-button soft-button--pink" onClick={onResume}>▶</button>
-      )}
-      <button className="soft-button soft-button--orange" onClick={onReset}>↺</button>
-      <button className="soft-button soft-button--blue" onClick={() => onSaveState(1)}>♡</button>
-      <button className="soft-button soft-button--blue" onClick={onFullscreen}>⛶</button>
+      {/* Group 1: Playback */}
+      <div className="floating-controls__group">
+        {status === 'running' ? (
+          <button
+            className="floating-controls__btn floating-controls__btn--accent"
+            onClick={onPause}
+            aria-label="Pause"
+          >
+            ⏸
+          </button>
+        ) : (
+          <button
+            className="floating-controls__btn floating-controls__btn--accent"
+            onClick={onResume}
+            aria-label="Resume"
+          >
+            ▶
+          </button>
+        )}
+        <button
+          className="floating-controls__btn floating-controls__btn--danger"
+          onClick={onReset}
+          aria-label="Reset"
+        >
+          ↺
+        </button>
+      </div>
+
+      <span className="floating-controls__divider" />
+
+      {/* Group 2: Save */}
+      <div className="floating-controls__group">
+        <button
+          className="floating-controls__btn floating-controls__btn--accent"
+          onClick={() => onSaveState(1)}
+          aria-label="Save state"
+        >
+          💾
+        </button>
+      </div>
+
+      <span className="floating-controls__divider" />
+
+      {/* Group 3: System */}
+      <div className="floating-controls__group">
+        <button
+          className="floating-controls__btn"
+          onClick={onFullscreen}
+          aria-label="Fullscreen"
+        >
+          ⛶
+        </button>
+      </div>
     </div>
   )
 }
