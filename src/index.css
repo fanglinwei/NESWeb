@@ -39,7 +39,7 @@
 
   /* Shadows */
   --shadow-glow-cyan: 0 0 20px rgba(0, 204, 255, 0.25), 0 0 60px rgba(0, 204, 255, 0.08);
-  --shadow-glow-pink: 0 0 20px rgba(255, 51, 102, 0.30), 0 0 50px rgba(255, 51, 102, 0.10);
+  --shadow-glow-destructive: 0 0 20px rgba(255, 51, 102, 0.30), 0 0 50px rgba(255, 51, 102, 0.10);
   --shadow-glow-green: 0 0 12px rgba(0, 255, 136, 0.25);
   --shadow-elevate: 0 16px 40px rgba(0, 0, 0, 0.50);
   --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -69,6 +69,7 @@ html, body, #root {
 
 body {
   font-family: var(--font-label);
+  font-weight: 600;
   font-size: 16px;
   line-height: 1.5;
   background: var(--color-bg);
@@ -94,6 +95,13 @@ body::before {
       transparent 2px,
       rgba(0, 200, 255, 0.025) 2px,
       rgba(0, 200, 255, 0.025) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 200, 255, 0.018) 2px,
+      rgba(0, 200, 255, 0.018) 4px
     );
 }
 
