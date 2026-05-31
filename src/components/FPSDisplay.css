@@ -1,0 +1,89 @@
+/* === FPS HUD Display === */
+
+.fps-display {
+  position: fixed;
+  top: calc(var(--safe-top) + 10px);
+  right: calc(var(--safe-right) + 12px);
+  z-index: 20;
+  padding: 5px 10px;
+  border: 1px solid rgba(0, 255, 136, 0.20);
+  border-radius: var(--radius-sm);
+  background: rgba(5, 13, 24, 0.75);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-accent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Running dot indicator */
+.fps-display::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.fps-display--good {
+  color: var(--color-accent);
+  border-color: rgba(0, 255, 136, 0.25);
+}
+
+.fps-display--warn {
+  color: var(--color-warning);
+  border-color: rgba(255, 204, 0, 0.25);
+}
+
+.fps-display--bad {
+  color: var(--color-destructive);
+  border-color: rgba(255, 51, 102, 0.25);
+}
+
+.fps-display--good::before {
+  animation: fpsPulseGood 2s ease-in-out infinite;
+}
+
+.fps-display--warn::before {
+  animation: fpsPulseWarn 0.8s ease-in-out infinite;
+}
+
+.fps-display--bad::before {
+  animation: fpsPulseBad 0.4s ease-in-out infinite;
+}
+
+@keyframes fpsPulseGood {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+@keyframes fpsPulseWarn {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+@keyframes fpsPulseBad {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fps-display::before {
+    animation: none;
+  }
+}
+
+/* Mobile landscape: move to right panel */
+@media (max-height: 430px) and (orientation: landscape) {
+  .fps-display {
+    position: static;
+    font-size: 9px;
+    padding: 3px 6px;
+    background: transparent;
+    border: none;
+  }
+}
