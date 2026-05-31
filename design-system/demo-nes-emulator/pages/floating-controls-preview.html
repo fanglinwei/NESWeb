@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Floating Controls · NESWeb UI Preview</title>
+  <style>
+    :root {
+      --color-bg: #050d18;
+      --color-surface: #0a1530;
+      --color-primary: #00ccff;
+      --color-accent: #00ff88;
+      --color-destructive: #ff3366;
+      --color-text: #ffffff;
+      --color-text-muted: rgba(255, 255, 255, 0.62);
+      --color-text-dim: rgba(255, 255, 255, 0.36);
+      --color-border: rgba(0, 200, 255, 0.14);
+      --color-border-strong: rgba(0, 200, 255, 0.34);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-full: 999px;
+      --shadow-lg: 0 18px 42px rgba(0, 0, 0, 0.42), 0 0 42px rgba(0, 204, 255, 0.08);
+      --shadow-glow-green: 0 0 18px rgba(0, 255, 136, 0.26);
+      --shadow-glow-destructive: 0 0 18px rgba(255, 51, 102, 0.28);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --font-display: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-label: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { color-scheme: dark; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-label);
+      color: var(--color-text);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(0, 204, 255, 0.18), transparent 30%),
+        radial-gradient(circle at 78% 18%, rgba(255, 51, 102, 0.12), transparent 30%),
+        linear-gradient(180deg, #071426, var(--color-bg));
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 200, 255, 0.028) 2px, rgba(0, 200, 255, 0.028) 4px);
+    }
+
+    button { font: inherit; }
+
+    .page {
+      position: relative;
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 72px;
+    }
+
+    .hero {
+      min-height: 32vh;
+      display: grid;
+      align-items: end;
+      padding: 48px 0 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--color-accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      max-width: 880px;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 7vw, 84px);
+      line-height: 0.96;
+      letter-spacing: 0;
+      color: var(--color-primary);
+      text-shadow: 0 0 22px rgba(0, 204, 255, 0.34);
+    }
+
+    .lead {
+      max-width: 780px;
+      margin-top: 18px;
+      color: var(--color-text-muted);
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      background: rgba(10, 21, 48, 0.62);
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(14px);
+    }
+
+    .stage {
+      padding: clamp(16px, 3vw, 28px);
+    }
+
+    .stage__hud {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .canvas {
+      position: relative;
+      display: grid;
+      place-items: center;
+      aspect-ratio: 256 / 240;
+      border: 2px solid rgba(0, 200, 255, 0.18);
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        #06101f;
+      background-size: 16px 16px;
+      box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.62), 0 0 36px rgba(0, 204, 255, 0.10);
+      overflow: hidden;
+    }
+
+    .canvas::after {
+      content: 'GAME CANVAS';
+      font-family: var(--font-display);
+      font-size: clamp(13px, 2vw, 22px);
+      color: rgba(255, 255, 255, 0.58);
+    }
+
+    .toolbar-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 18px;
+    }
+
+    .floating-controls {
+      --control-size: 44px;
+      --control-icon-size: 19px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+        rgba(10, 21, 48, 0.86);
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(14px);
+      transition: opacity 180ms ease-out;
+    }
+
+    .floating-controls--compact {
+      --control-size: 32px;
+      --control-icon-size: 15px;
+      max-width: calc(100vw - var(--safe-left) - var(--safe-right) - 16px);
+      padding: 5px 7px;
+      gap: 6px;
+    }
+
+    .floating-controls__group {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .floating-controls--compact .floating-controls__group { gap: 6px; }
+
+    .floating-controls__divider {
+      width: 1px;
+      height: 26px;
+      border-radius: 1px;
+      background: var(--color-border);
+      box-shadow: 1px 0 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .floating-controls--compact .floating-controls__divider { height: 20px; }
+
+    .floating-controls__btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--control-size);
+      height: var(--control-size);
+      min-width: var(--control-size);
+      min-height: var(--control-size);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.055);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: background 170ms ease-out, border-color 170ms ease-out, color 170ms ease-out, box-shadow 170ms ease-out, opacity 170ms ease-out, transform 170ms ease-out;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .floating-controls__btn svg {
+      width: var(--control-icon-size);
+      height: var(--control-icon-size);
+      fill: currentColor;
+      pointer-events: none;
+    }
+
+    .floating-controls__btn:hover,
+    .floating-controls__btn:focus-visible {
+      background: rgba(0, 200, 255, 0.11);
+      border-color: var(--color-border-strong);
+      color: var(--color-primary);
+      box-shadow: 0 0 14px rgba(0, 200, 255, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .floating-controls__btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+
+    .floating-controls__btn:active {
+      transform: translateY(0);
+      opacity: 0.82;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.42);
+    }
+
+    .floating-controls__btn::after {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      z-index: 4;
+      content: attr(data-tooltip);
+      min-width: max-content;
+      padding: 5px 8px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: rgba(3, 8, 22, 0.94);
+      color: var(--color-text);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      line-height: 1;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(-50%) translateY(4px);
+      transition: opacity 150ms ease-out, transform 150ms ease-out;
+    }
+
+    .floating-controls__btn:hover::after,
+    .floating-controls__btn:focus-visible::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .floating-controls--compact .floating-controls__btn::after { display: none; }
+
+    .floating-controls__btn--accent {
+      border-color: rgba(0, 255, 136, 0.30);
+      background: rgba(0, 255, 136, 0.09);
+      color: var(--color-accent);
+    }
+
+    .floating-controls__btn--accent:hover,
+    .floating-controls__btn--accent:focus-visible {
+      border-color: rgba(0, 255, 136, 0.52);
+      background: rgba(0, 255, 136, 0.16);
+      color: var(--color-accent);
+      box-shadow: var(--shadow-glow-green);
+    }
+
+    .floating-controls__btn--danger {
+      margin-left: 6px;
+      border-color: rgba(255, 51, 102, 0.34);
+      background: rgba(255, 51, 102, 0.08);
+      color: var(--color-destructive);
+    }
+
+    .floating-controls--compact .floating-controls__btn--danger { margin-left: 2px; }
+
+    .floating-controls__btn--danger:hover,
+    .floating-controls__btn--danger:focus-visible {
+      border-color: rgba(255, 51, 102, 0.56);
+      background: rgba(255, 51, 102, 0.15);
+      color: var(--color-destructive);
+      box-shadow: var(--shadow-glow-destructive);
+    }
+
+    .side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .card h2,
+    .card h3 {
+      font-family: var(--font-display);
+      font-size: 15px;
+      letter-spacing: 0;
+      color: var(--color-primary);
+    }
+
+    .card p,
+    .card li {
+      color: var(--color-text-muted);
+      line-height: 1.55;
+    }
+
+    .card ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+    }
+
+    .state-stack {
+      display: grid;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .state-card {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .state-card__label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--color-text-dim);
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 820px) {
+      .grid { grid-template-columns: 1fr; }
+      .page { width: min(100% - 20px, 1120px); padding-top: 24px; }
+      .stage { padding: 14px; }
+      .floating-controls { width: min(100%, 360px); border-radius: 28px; padding: 8px 10px; }
+      .toolbar-row { margin-top: 14px; }
+    }
+
+    @media (max-height: 430px) and (orientation: landscape) {
+      .hero { min-height: auto; padding: 18px 0; }
+      .floating-controls { --control-size: 32px; --control-icon-size: 15px; padding: 5px 7px; gap: 6px; }
+      .floating-controls__btn::after { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .floating-controls,
+      .floating-controls__btn,
+      .floating-controls__btn::after {
+        transition: none;
+      }
+
+      .floating-controls__btn:hover,
+      .floating-controls__btn:focus-visible,
+      .floating-controls__btn:active {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" aria-labelledby="title">
+      <p class="eyebrow">NESWeb design-system/demo-nes-emulator/pages</p>
+      <h1 id="title">Floating Controls Preview</h1>
+      <p class="lead">更新后的 UI 文档预览：浮动控制栏使用分组 pill 容器、统一 SVG 图标、44px 触控目标、清晰焦点环、悬停/键盘提示，以及独立的危险重置样式。</p>
+    </section>
+
+    <section class="grid" aria-label="Floating controls preview">
+      <div class="panel stage">
+        <div class="stage__hud" aria-hidden="true">
+          <span>FPS: 60</span>
+          <span>SUPER_MARIO_BROS.NES</span>
+          <span>RUN</span>
+        </div>
+        <div class="canvas" role="img" aria-label="NES emulator game canvas placeholder"></div>
+        <div class="toolbar-row">
+          <div class="floating-controls" aria-label="Emulator controls">
+            <div class="floating-controls__group" aria-label="Playback controls">
+              <button class="floating-controls__btn floating-controls__btn--accent" type="button" aria-label="Pause" aria-pressed="true" data-tooltip="Pause">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5H7a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="M17 5h-2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/></svg>
+              </button>
+              <button class="floating-controls__btn floating-controls__btn--danger" type="button" aria-label="Reset" data-tooltip="Reset">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.4 8.8A6.9 6.9 0 1 1 5 13h2.2a4.7 4.7 0 1 0 1.1-3l2.2 2.2H4.8V6.5l1.6 2.3Z"/></svg>
+              </button>
+            </div>
+            <span class="floating-controls__divider" aria-hidden="true"></span>
+            <div class="floating-controls__group" aria-label="File controls">
+              <button class="floating-controls__btn floating-controls__btn--accent" type="button" aria-label="Save state" data-tooltip="Save state">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11.6L20 7.4V20H5V4Zm3 2v5h8V6H8Zm8 12v-4H8v4h8Z"/></svg>
+              </button>
+            </div>
+            <span class="floating-controls__divider" aria-hidden="true"></span>
+            <div class="floating-controls__group" aria-label="System controls">
+              <button class="floating-controls__btn" type="button" aria-label="Fullscreen" data-tooltip="Fullscreen">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5h6v2H8.4L12 10.6 10.6 12 7 8.4V11H5V5Zm8 0h6v6h-2V8.4L13.4 12 12 10.6 15.6 7H13V5ZM7 15.6 10.6 12 12 13.4 8.4 17H11v2H5v-6h2v2.6ZM13.4 12 17 15.6V13h2v6h-6v-2h2.6L12 13.4 13.4 12Z"/></svg>
+              </button>
+              <button class="floating-controls__btn" type="button" aria-label="Settings" data-tooltip="Settings">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 3 13.8 5.5c.5.2 1 .4 1.4.6L17.6 5l1.4 1.4-1.1 2.4c.3.5.5.9.6 1.4L21 11v2l-2.5.8c-.2.5-.4 1-.6 1.4l1.1 2.4-1.4 1.4-2.4-1.1c-.5.3-.9.5-1.4.6L13 21h-2l-.8-2.5c-.5-.2-1-.4-1.4-.6L6.4 19 5 17.6l1.1-2.4c-.3-.5-.5-.9-.6-1.4L3 13v-2l2.5-.8c.2-.5.4-1 .6-1.4L5 6.4 6.4 5l2.4 1.1c.5-.3.9-.5 1.4-.6L11 3h2Zm-1 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <article class="panel card">
+          <h2>Documented Rules</h2>
+          <ul>
+            <li>Toolbar uses one grouped pill container.</li>
+            <li>Icon-only actions have aria-label and visible hover/focus tips.</li>
+            <li>Reset uses destructive color and spacing separation.</li>
+            <li>Normal touch targets are 44x44px.</li>
+          </ul>
+        </article>
+        <article class="panel card">
+          <h2>Accessibility Pass</h2>
+          <ul>
+            <li>Tab order follows visual group order.</li>
+            <li>Dividers are aria-hidden.</li>
+            <li>Pause state uses aria-pressed.</li>
+            <li>Reduced motion removes decorative lift.</li>
+          </ul>
+        </article>
+      </aside>
+    </section>
+
+    <section class="state-stack" aria-label="Toolbar states">
+      <article class="panel state-card">
+        <span class="state-card__label">Paused state</span>
+        <div class="floating-controls" aria-label="Paused emulator controls">
+          <div class="floating-controls__group" aria-label="Playback controls">
+            <button class="floating-controls__btn floating-controls__btn--accent" type="button" aria-label="Resume" aria-pressed="false" data-tooltip="Resume">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+            </button>
+            <button class="floating-controls__btn floating-controls__btn--danger" type="button" aria-label="Reset" data-tooltip="Reset">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.4 8.8A6.9 6.9 0 1 1 5 13h2.2a4.7 4.7 0 1 0 1.1-3l2.2 2.2H4.8V6.5l1.6 2.3Z"/></svg>
+            </button>
+          </div>
+          <span class="floating-controls__divider" aria-hidden="true"></span>
+          <div class="floating-controls__group" aria-label="File controls">
+            <button class="floating-controls__btn floating-controls__btn--accent" type="button" aria-label="Save state" data-tooltip="Save state">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11.6L20 7.4V20H5V4Zm3 2v5h8V6H8Zm8 12v-4H8v4h8Z"/></svg>
+            </button>
+          </div>
+          <span class="floating-controls__divider" aria-hidden="true"></span>
+          <div class="floating-controls__group" aria-label="System controls">
+            <button class="floating-controls__btn" type="button" aria-label="Fullscreen" data-tooltip="Fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5h6v2H8.4L12 10.6 10.6 12 7 8.4V11H5V5Zm8 0h6v6h-2V8.4L13.4 12 12 10.6 15.6 7H13V5ZM7 15.6 10.6 12 12 13.4 8.4 17H11v2H5v-6h2v2.6ZM13.4 12 17 15.6V13h2v6h-6v-2h2.6L12 13.4 13.4 12Z"/></svg></button>
+            <button class="floating-controls__btn" type="button" aria-label="Settings" data-tooltip="Settings"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 3 13.8 5.5c.5.2 1 .4 1.4.6L17.6 5l1.4 1.4-1.1 2.4c.3.5.5.9.6 1.4L21 11v2l-2.5.8c-.2.5-.4 1-.6 1.4l1.1 2.4-1.4 1.4-2.4-1.1c-.5.3-.9.5-1.4.6L13 21h-2l-.8-2.5c-.5-.2-1-.4-1.4-.6L6.4 19 5 17.6l1.1-2.4c-.3-.5-.5-.9-.6-1.4L3 13v-2l2.5-.8c.2-.5.4-1 .6-1.4L5 6.4 6.4 5l2.4 1.1c.5-.3.9-.5 1.4-.6L11 3h2Zm-1 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg></button>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel state-card">
+        <span class="state-card__label">Compact landscape density</span>
+        <div class="floating-controls floating-controls--compact" aria-label="Compact emulator controls">
+          <div class="floating-controls__group" aria-label="Playback controls">
+            <button class="floating-controls__btn floating-controls__btn--accent" type="button" aria-label="Pause" aria-pressed="true" data-tooltip="Pause"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5H7a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="M17 5h-2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/></svg></button>
+            <button class="floating-controls__btn floating-controls__btn--danger" type="button" aria-label="Reset" data-tooltip="Reset"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.4 8.8A6.9 6.9 0 1 1 5 13h2.2a4.7 4.7 0 1 0 1.1-3l2.2 2.2H4.8V6.5l1.6 2.3Z"/></svg></button>
+          </div>
+          <span class="floating-controls__divider" aria-hidden="true"></span>
+          <div class="floating-controls__group" aria-label="File controls"><button class="floating-controls__btn floating-controls__btn--accent" type="button" aria-label="Save state" data-tooltip="Save state"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11.6L20 7.4V20H5V4Zm3 2v5h8V6H8Zm8 12v-4H8v4h8Z"/></svg></button></div>
+          <span class="floating-controls__divider" aria-hidden="true"></span>
+          <div class="floating-controls__group" aria-label="System controls"><button class="floating-controls__btn" type="button" aria-label="Fullscreen" data-tooltip="Fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5h6v2H8.4L12 10.6 10.6 12 7 8.4V11H5V5Zm8 0h6v6h-2V8.4L13.4 12 12 10.6 15.6 7H13V5ZM7 15.6 10.6 12 12 13.4 8.4 17H11v2H5v-6h2v2.6ZM13.4 12 17 15.6V13h2v6h-6v-2h2.6L12 13.4 13.4 12Z"/></svg></button><button class="floating-controls__btn" type="button" aria-label="Settings" data-tooltip="Settings"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 3 13.8 5.5c.5.2 1 .4 1.4.6L17.6 5l1.4 1.4-1.1 2.4c.3.5.5.9.6 1.4L21 11v2l-2.5.8c-.2.5-.4 1-.6 1.4l1.1 2.4-1.4 1.4-2.4-1.1c-.5.3-.9.5-1.4.6L13 21h-2l-.8-2.5c-.5-.2-1-.4-1.4-.6L6.4 19 5 17.6l1.1-2.4c-.3-.5-.5-.9-.6-1.4L3 13v-2l2.5-.8c.2-.5.4-1 .6-1.4L5 6.4 6.4 5l2.4 1.1c.5-.3.9-.5 1.4-.6L11 3h2Zm-1 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg></button></div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

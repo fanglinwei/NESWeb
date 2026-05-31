@@ -1,4 +1,4 @@
-/* === Touch Gamepad — Switch-Inspired Layout === */
+/* === Touch Gamepad === */
 
 .touch-gamepad {
   display: flex;
@@ -163,40 +163,90 @@
   }
 }
 
-/* === Mobile Landscape === */
+/* === Mobile Landscape: reference-style overlay controls === */
 @media (max-height: 430px) and (orientation: landscape) {
+  .touch-gamepad {
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 max(10px, var(--safe-right)) 0 max(10px, var(--safe-left));
+    pointer-events: none;
+  }
+
+  .touch-gamepad__left,
+  .touch-gamepad__right,
+  .touch-gamepad__dpad-btn,
+  .touch-gamepad__action-btn,
+  .touch-gamepad__meta-btn {
+    pointer-events: auto;
+  }
+
+  .touch-gamepad__left {
+    align-self: center;
+    transform: translateY(10px);
+  }
+
   .touch-gamepad__dpad {
-    grid-template-columns: repeat(3, 36px);
-    grid-template-rows: repeat(3, 36px);
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 44px);
+    gap: 0;
   }
 
   .touch-gamepad__dpad-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-  }
-
-  .touch-gamepad__action-btn {
-    width: 42px;
-    height: 42px;
-    font-size: 16px;
-  }
-
-  .touch-gamepad__actions {
-    gap: 8px;
+    width: 44px;
+    height: 44px;
+    font-size: 15px;
   }
 
   .touch-gamepad__right {
-    gap: 6px;
+    align-self: stretch;
+    width: clamp(156px, 24vw, 210px);
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto 1fr;
+    align-items: center;
+    gap: 0;
+    transform: translateY(4px);
+  }
+
+  .touch-gamepad__actions {
+    grid-row: 2;
+    justify-self: end;
+    display: grid;
+    grid-template-columns: repeat(2, 54px);
+    grid-template-rows: 24px 54px 24px;
+    gap: 0 13px;
+  }
+
+  .touch-gamepad__action-btn {
+    width: 54px;
+    height: 54px;
+    font-size: 18px;
+  }
+
+  .touch-gamepad__action-b {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .touch-gamepad__action-a {
+    grid-column: 2;
+    grid-row: 2;
   }
 
   .touch-gamepad__meta {
-    gap: 10px;
+    grid-row: 3;
+    align-self: start;
+    justify-self: center;
+    display: flex;
+    gap: 18px;
+    padding-top: 8px;
   }
 
   .touch-gamepad__meta-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 10px;
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
   }
 }
