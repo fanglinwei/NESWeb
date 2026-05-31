@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Demo NES Emulator · UI Design Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #dc2626;
+      --color-on-primary: #ffffff;
+      --color-secondary: #2563eb;
+      --color-accent: #22c55e;
+      --color-background: #0f172a;
+      --color-foreground: #ffffff;
+      --color-muted: #1f1829;
+      --color-surface: rgba(15, 23, 42, 0.86);
+      --color-surface-strong: #111827;
+      --color-border: rgba(255, 255, 255, 0.08);
+      --color-border-strong: rgba(255, 255, 255, 0.18);
+      --color-destructive: #dc2626;
+      --color-ring: #dc2626;
+      --text-muted: rgba(255, 255, 255, 0.68);
+      --text-soft: rgba(255, 255, 255, 0.82);
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --shadow-lg: 0 18px 45px rgba(0, 0, 0, 0.34);
+      --shadow-xl: 0 28px 80px rgba(0, 0, 0, 0.48);
+      --font-heading: 'Press Start 2P', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --font-body: 'VT323', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--color-foreground);
+      font-family: var(--font-body);
+      font-size: 24px;
+      line-height: 1.45;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(220, 38, 38, 0.28), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(37, 99, 235, 0.24), transparent 30%),
+        radial-gradient(circle at 50% 86%, rgba(34, 197, 94, 0.14), transparent 34%),
+        var(--color-background);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 100% 4px;
+      mix-blend-mode: screen;
+      opacity: 0.34;
+    }
+
+    a { color: inherit; }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 80px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: var(--space-xl);
+      align-items: center;
+      min-height: 88vh;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      padding: 8px 14px;
+      border: 1px solid var(--color-border-strong);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-soft);
+      font-size: 20px;
+      letter-spacing: 0.04em;
+    }
+
+    .eyebrow__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--color-accent);
+      box-shadow: 0 0 18px rgba(34, 197, 94, 0.85);
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-family: var(--font-heading);
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      margin-top: 24px;
+      font-size: clamp(28px, 5vw, 56px);
+      text-shadow: 0 5px 0 rgba(0,0,0,0.35), 0 0 34px rgba(220,38,38,0.25);
+    }
+
+    h2 {
+      font-size: clamp(18px, 2.2vw, 30px);
+    }
+
+    h3 {
+      font-size: 15px;
+      color: var(--color-accent);
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    .hero__copy {
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    .hero__lead {
+      max-width: 680px;
+      font-size: clamp(24px, 3vw, 34px);
+    }
+
+    .hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      align-items: center;
+    }
+
+    .btn {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border: 1px solid var(--color-border-strong);
+      border-radius: 999px;
+      color: var(--color-foreground);
+      background: rgba(255,255,255,0.06);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,0.34);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .btn:focus-visible, .control-button:focus-visible, .mobile-key:focus-visible, .field:focus-visible {
+      outline: 3px solid var(--color-ring);
+      outline-offset: 3px;
+    }
+
+    .btn--primary {
+      border-color: rgba(34,197,94,0.75);
+      background: linear-gradient(180deg, #35d875, var(--color-accent));
+      color: #04130a;
+      box-shadow: 0 12px 34px rgba(34,197,94,0.25);
+      font-weight: 700;
+    }
+
+    .section {
+      margin-top: 72px;
+    }
+
+    .section__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .panel {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.035));
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.08);
+      backdrop-filter: blur(16px);
+    }
+
+    .emulator-stage {
+      position: relative;
+      padding: clamp(16px, 3vw, 28px);
+      overflow: hidden;
+    }
+
+    .emulator-stage::before {
+      content: '';
+      position: absolute;
+      inset: 8%;
+      background: radial-gradient(circle, rgba(37,99,235,0.3), transparent 62%);
+      filter: blur(22px);
+      z-index: 0;
+    }
+
+    .stage-topbar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+      color: var(--text-soft);
+      font-size: 20px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      padding: 4px 10px;
+      border: 1px solid rgba(34,197,94,0.45);
+      border-radius: 999px;
+      color: #bbf7d0;
+      background: rgba(34,197,94,0.11);
+    }
+
+    .canvas-frame {
+      position: relative;
+      z-index: 1;
+      aspect-ratio: 256 / 240;
+      width: min(100%, 680px);
+      margin: 0 auto;
+      padding: clamp(14px, 2vw, 22px);
+      border: 1px solid var(--color-border-strong);
+      border-radius: 28px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.1), transparent 22%),
+        linear-gradient(180deg, #111827, #030712);
+      box-shadow: inset 0 0 0 6px rgba(255,255,255,0.035), var(--shadow-xl);
+    }
+
+    .canvas-screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.16);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        #07111f;
+      background-size: 16px 16px;
+      image-rendering: pixelated;
+    }
+
+    .canvas-screen::after {
+      content: 'GAME CANVAS';
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,0.72);
+      font-family: var(--font-heading);
+      font-size: clamp(12px, 2vw, 18px);
+      text-align: center;
+    }
+
+    .hud-row {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+      color: var(--text-muted);
+    }
+
+    .floating-demo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      max-width: 100%;
+      margin: 24px auto 0;
+      padding: 10px;
+      border: 1px solid var(--color-border-strong);
+      border-radius: 999px;
+      background: rgba(3, 7, 18, 0.72);
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.12);
+      backdrop-filter: blur(18px);
+    }
+
+    .control-button {
+      min-width: 48px;
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 999px;
+      color: var(--color-foreground);
+      background: rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .control-button:hover { transform: translateY(-1px); background: rgba(255,255,255,0.13); }
+    .control-button--primary { background: var(--color-accent); color: #04130a; }
+    .control-button--danger { background: rgba(220,38,38,0.18); color: #fecaca; border-color: rgba(220,38,38,0.5); }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .spec-card {
+      padding: var(--space-lg);
+    }
+
+    .spec-card ul {
+      margin: 14px 0 0;
+      padding-left: 22px;
+      color: var(--text-muted);
+    }
+
+    .controls-showcase {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.9fr) minmax(320px, 1.1fr);
+      gap: var(--space-lg);
+      align-items: center;
+      padding: var(--space-lg);
+    }
+
+    .mobile-pad {
+      display: grid;
+      grid-template-columns: 1fr 0.7fr 1fr;
+      gap: var(--space-lg);
+      align-items: center;
+    }
+
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 54px);
+      grid-template-rows: repeat(3, 54px);
+      justify-content: center;
+    }
+
+    .mobile-key {
+      min-width: 48px;
+      min-height: 48px;
+      border: 1px solid var(--color-border-strong);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      color: var(--color-foreground);
+      cursor: pointer;
+      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.25);
+    }
+
+    .mobile-key:active {
+      transform: translateY(2px);
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.25);
+    }
+
+    .dpad .up { grid-column: 2; grid-row: 1; }
+    .dpad .left { grid-column: 1; grid-row: 2; }
+    .dpad .center { grid-column: 2; grid-row: 2; opacity: 0.45; cursor: default; }
+    .dpad .right { grid-column: 3; grid-row: 2; }
+    .dpad .down { grid-column: 2; grid-row: 3; }
+
+    .meta-keys, .action-keys {
+      display: flex;
+      gap: var(--space-md);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .action-keys .mobile-key {
+      width: 68px;
+      height: 68px;
+      border-radius: 999px;
+      font-family: var(--font-heading);
+      font-size: 16px;
+    }
+
+    .action-keys .a { background: rgba(220,38,38,0.22); border-color: rgba(220,38,38,0.55); }
+    .action-keys .b { background: rgba(37,99,235,0.24); border-color: rgba(37,99,235,0.58); }
+
+    .modal-preview {
+      position: relative;
+      min-height: 640px;
+      padding: var(--space-lg);
+      overflow: hidden;
+    }
+
+    .modal-preview::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.56);
+    }
+
+    .modal {
+      position: relative;
+      z-index: 1;
+      width: min(640px, 100%);
+      margin: 0 auto;
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-lg);
+      background: #111827;
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+    }
+
+    .modal__header, .modal__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding: var(--space-lg);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .modal__footer {
+      border-top: 1px solid var(--color-border);
+      border-bottom: 0;
+      justify-content: flex-end;
+    }
+
+    .modal__body {
+      display: grid;
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+    }
+
+    .setting-group {
+      display: grid;
+      gap: 12px;
+    }
+
+    .setting-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--space-md);
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .setting-row label {
+      display: grid;
+      gap: 2px;
+      color: var(--color-foreground);
+    }
+
+    .setting-row small {
+      color: var(--text-muted);
+      font-size: 19px;
+    }
+
+    .field {
+      min-height: 44px;
+      min-width: 150px;
+      border: 1px solid var(--color-border-strong);
+      border-radius: 12px;
+      background: rgba(3,7,18,0.74);
+      color: var(--color-foreground);
+      padding: 8px 12px;
+    }
+
+    .danger-zone {
+      border-color: rgba(220,38,38,0.42);
+      background: rgba(220,38,38,0.08);
+    }
+
+    .source-list {
+      display: grid;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 20px;
+    }
+
+    .source-list code {
+      color: #bfdbfe;
+    }
+
+    @media (max-width: 860px) {
+      .hero, .controls-showcase, .preview-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero { min-height: auto; padding-top: 24px; }
+      .section__header { display: grid; }
+      .mobile-pad { grid-template-columns: 1fr; }
+      .floating-demo { border-radius: var(--radius-lg); }
+      .modal-preview { padding: 0; }
+      .modal { min-height: 100%; border-radius: 24px 24px 0 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__copy">
+        <span class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span> Design system preview · Demo NES Emulator</span>
+        <h1 id="hero-title">NES Player UI</h1>
+        <p class="hero__lead">根据 UI markdown 生成的可预览 HTML：暗色街机舞台、可访问的浮动控制栏、以及清晰可逆的设置弹窗。</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#main-screen">预览主画面</a>
+          <a class="btn" href="#floating-controls">查看控制栏</a>
+          <a class="btn" href="#settings-modal">查看设置弹窗</a>
+        </div>
+      </div>
+
+      <aside class="panel emulator-stage" aria-label="NES emulator main screen preview">
+        <div class="stage-topbar">
+          <span>SUPER MARIO BROS.NES</span>
+          <span class="status-pill"><span class="eyebrow__dot" aria-hidden="true"></span> RUNNING · 60 FPS</span>
+        </div>
+        <div class="canvas-frame">
+          <div class="canvas-screen" role="img" aria-label="Pixelated game canvas placeholder"></div>
+        </div>
+        <div class="floating-demo" aria-label="Floating emulator controls preview">
+          <button class="control-button control-button--primary" aria-label="Pause">Ⅱ</button>
+          <button class="control-button control-button--danger" aria-label="Reset">↺</button>
+          <button class="control-button" aria-label="Save state">◇</button>
+          <button class="control-button" aria-label="Fullscreen">⛶</button>
+        </div>
+        <div class="hud-row">
+          <span>Keyboard hints hidden until needed</span>
+          <span>Touch targets ≥ 44px</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="main-screen" aria-labelledby="main-screen-title">
+      <div class="section__header">
+        <div>
+          <h2 id="main-screen-title">Main Emulator Screen</h2>
+          <p>来自 <code>pages/main-emulator-screen.md</code>：游戏画面优先、画布不变形、辅助 UI 不遮挡核心内容。</p>
+        </div>
+      </div>
+      <div class="preview-grid">
+        <article class="panel spec-card">
+          <h3>Canvas first</h3>
+          <ul>
+            <li>居中显示游戏画布</li>
+            <li>保持 NES 宽高比</li>
+            <li>不要裁剪或拉伸 gameplay</li>
+          </ul>
+        </article>
+        <article class="panel spec-card">
+          <h3>Tactile frame</h3>
+          <ul>
+            <li>暗色街机外框</li>
+            <li>低透明度红/蓝径向光</li>
+            <li>轻量阴影，不干扰游戏</li>
+          </ul>
+        </article>
+        <article class="panel spec-card">
+          <h3>Accessible states</h3>
+          <ul>
+            <li>加载/暂停/错误状态靠近画布</li>
+            <li>状态变化使用 aria-live</li>
+            <li>颜色含义配合文字说明</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="floating-controls" aria-labelledby="floating-controls-title">
+      <div class="section__header">
+        <div>
+          <h2 id="floating-controls-title">Floating Controls</h2>
+          <p>来自 <code>pages/floating-controls.md</code>：分组、触控友好、SVG/vector 图标优先、每个 icon-only 按钮都要有可访问名称。</p>
+        </div>
+      </div>
+      <div class="panel controls-showcase">
+        <div>
+          <h3>Toolbar shell</h3>
+          <p>半透明深色 pill 容器，明显边框、内高光和轻微 elevation。重置等危险操作需要视觉分离。</p>
+          <div class="floating-demo" style="margin-left:0">
+            <button class="control-button control-button--primary" aria-label="Resume">▶</button>
+            <button class="control-button control-button--danger" aria-label="Reset">↺</button>
+            <button class="control-button" aria-label="Save state">◇</button>
+            <button class="control-button" aria-label="Open settings">⚙</button>
+          </div>
+        </div>
+        <div class="mobile-pad" aria-label="Mobile touch controls preview">
+          <div class="dpad">
+            <button class="mobile-key up" aria-label="Up">↑</button>
+            <button class="mobile-key left" aria-label="Left">←</button>
+            <button class="mobile-key center" aria-hidden="true" tabindex="-1"></button>
+            <button class="mobile-key right" aria-label="Right">→</button>
+            <button class="mobile-key down" aria-label="Down">↓</button>
+          </div>
+          <div class="meta-keys">
+            <button class="mobile-key" aria-label="Select">SELECT</button>
+            <button class="mobile-key" aria-label="Start">START</button>
+          </div>
+          <div class="action-keys">
+            <button class="mobile-key b" aria-label="B button">B</button>
+            <button class="mobile-key a" aria-label="A button">A</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="settings-modal" aria-labelledby="settings-modal-title">
+      <div class="section__header">
+        <div>
+          <h2 id="settings-modal-title">Settings Modal</h2>
+          <p>来自 <code>pages/settings-modal.md</code>：强遮罩、暗色 elevated surface、清楚分组、危险操作独立 danger zone。</p>
+        </div>
+      </div>
+      <div class="panel modal-preview">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+          <div class="modal__header">
+            <h3 id="dialog-title">SETTINGS</h3>
+            <button class="control-button" aria-label="Close settings">×</button>
+          </div>
+          <div class="modal__body">
+            <section class="setting-group" aria-labelledby="video-title">
+              <h3 id="video-title">Video</h3>
+              <div class="setting-row">
+                <label for="scale">Scale mode<small>保持像素清晰，避免画面拉伸。</small></label>
+                <select class="field" id="scale"><option>Integer scale</option><option>Fit screen</option></select>
+              </div>
+              <div class="setting-row">
+                <label for="filter">Color mode<small>选择标准 NES 或增强对比显示。</small></label>
+                <select class="field" id="filter"><option>NES NTSC</option><option>High contrast</option></select>
+              </div>
+            </section>
+            <section class="setting-group" aria-labelledby="controls-title">
+              <h3 id="controls-title">Controls</h3>
+              <div class="setting-row">
+                <label for="layout">Touch layout<small>移动端允许两行布局，保证安全区内可触达。</small></label>
+                <select class="field" id="layout"><option>Classic</option><option>Compact</option></select>
+              </div>
+            </section>
+            <section class="setting-group danger-zone" aria-labelledby="danger-title">
+              <div class="setting-row danger-zone">
+                <label id="danger-title">Clear save data<small>破坏性操作需要确认，并尽量提供撤销。</small></label>
+                <button class="btn" type="button">Clear</button>
+              </div>
+            </section>
+          </div>
+          <div class="modal__footer">
+            <button class="btn" type="button">Cancel</button>
+            <button class="btn btn--primary" type="button">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="source-title">
+      <div class="panel spec-card">
+        <h2 id="source-title">Markdown sources</h2>
+        <div class="source-list">
+          <span><code>design-system/demo-nes-emulator/MASTER.md</code> — 全局颜色、字体、spacing、shadow、anti-patterns</span>
+          <span><code>design-system/demo-nes-emulator/pages/main-emulator-screen.md</code> — 主游戏画面规则</span>
+          <span><code>design-system/demo-nes-emulator/pages/floating-controls.md</code> — 浮动控制栏规则</span>
+          <span><code>design-system/demo-nes-emulator/pages/settings-modal.md</code> — 设置弹窗规则</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

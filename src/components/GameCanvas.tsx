@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { NES_WIDTH, NES_HEIGHT } from '../types/emulator'
+import './GameCanvas.css'
 
 interface GameCanvasProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>
@@ -9,12 +10,10 @@ interface GameCanvasProps {
 export default function GameCanvas({ canvasRef, onDropROM }: GameCanvasProps) {
   const internalRef = useRef<HTMLCanvasElement>(null)
 
-  // 将内部 ref 同步到外部 ref
   useEffect(() => {
     (canvasRef as React.MutableRefObject<HTMLCanvasElement | null>).current = internalRef.current
   })
 
-  // 阻止默认拖放行为，处理 ROM 文件拖入
   useEffect(() => {
     const canvas = internalRef.current
     if (!canvas) return
@@ -42,17 +41,14 @@ export default function GameCanvas({ canvasRef, onDropROM }: GameCanvasProps) {
   }, [onDropROM])
 
   return (
-    <canvas
-      ref={internalRef}
-      width={NES_WIDTH}
-      height={NES_HEIGHT}
-      style={{
-        display: 'block',
-        margin: '0 auto',
-        imageRendering: 'pixelated',
-        borderRadius: 'var(--radius-sm)',
-        boxShadow: '0 8px 32px rgba(255, 102, 153, 0.2)',
-      }}
-    />
+    <div className="game-canvas-frame">
+      <canvas
+        ref={internalRef}
+        className="game-canvas"
+        width={NES_WIDTH}
+        height={NES_HEIGHT}
+        aria-label="NES emulator game canvas"
+      />
+    </div>
   )
 }

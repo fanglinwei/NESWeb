@@ -48,8 +48,10 @@ function handleJSNESFrame(buffer: Uint32Array): void {
 }
 
 // JSNES 的 onAudioSample 回调：值范围 [-1.0, 1.0]
+// 这里将左右声道混成单声道发送，避免把交错的 L/R 样本直接
+// 当成单声道播放造成明显杂音。
 function handleJSNESAudio(left: number, right: number): void {
-  audioSamples.push(left, right)
+  audioSamples.push((left + right) * 0.5)
 }
 
 // ============================================================
@@ -61,12 +63,31 @@ const nes = new NES({
 })
 
 // 替换 JSNES 默认调色板为标准 NES NTSC 调色板
-// JSNES 内置色板与标准 NES 颜色差异较大（如索引 $21 是橙色而非浅蓝）
-// 这里用 NESdev 社区标准色板覆盖，确保游戏画面颜色准确
-const ptable = (nes as any).ppu.palTable
-ptable.curTable = STANDARD_NES_PALETTE
-ptable.makeTables()
-ptable.setEmphasis(0)
+// JSNES 内置色板与标准 NES 颜色差异较大（如索引 $21 是橙色而非浅蓝），导致游戏偏色。
+//
+// 关键：JSNES 的 loadROM()/reset() 会执行 `this.ppu = new PPU(this)`，
+// 即每次加载 ROM 或复位都会重建 PPU，并在 PPU 构造函数里调用
+// loadNTSCPalette() 重置为内置色板。因此调色板覆盖必须在每次
+// loadROM/reset 之后、对“当前”PPU 重新执行，否则会被丢弃。
+//
+// 另外 setEmphasis() 会写回 curTable[i]，若直接把模块级常量赋给
+// curTable，会被原地修改而污染常量，所以每次都用一份拷贝。
+function applyStandardPalette(): void {
+  const ppu = (nes as any).ppu
+  const ptable = ppu.palTable
+  ptable.curTable = STANDARD_NES_PALETTE.slice()
+  ptable.makeTables()
+  // 强制刷新：构造时 currentEmph 已是 0，直接 setEmphasis(0) 会因
+  // 提前返回而不复制 emphTable[0]，故先置为 -1 再设置。
+  ptable.currentEmph = -1
+  ptable.setEmphasis(0)
+  // imgPalette/sprPalette 是 PPU 从 palTable 派生出的渲染缓存。
+  // loadROM/reset/fromJSON 过程中可能已用 JSNES 默认色板填过缓存，
+  // 只替换 palTable 不会自动改掉已缓存的颜色，必须同步刷新一次。
+  ppu.updatePalettes()
+}
+
+applyStandardPalette()
 
 // ============================================================
 // ROM 信息解析 (iNES header)
@@ -204,6 +225,9 @@ self.onmessage = (e: MessageEvent<MainToWorker>) => {
       try {
         nes.loadROM(msg.rom)
 
+        // loadROM 内部重建了 PPU，需重新覆盖调色板
+        applyStandardPalette()
+
         const rom = new Uint8Array(msg.rom)
         const info = parseINESHeader(rom)
         self.postMessage({ type: 'ROM_LOADED', info } satisfies WorkerToMain)
@@ -259,6 +283,7 @@ self.onmessage = (e: MessageEvent<MainToWorker>) => {
       try {
         const json = new TextDecoder().decode(new Uint8Array(msg.data))
         nes.fromJSON(JSON.parse(json))
+        applyStandardPalette()
         prevController1 = 0
         controller1Bits = 0
         self.postMessage({ type: 'STATE_LOADED', ok: true } satisfies WorkerToMain)
@@ -273,6 +298,7 @@ self.onmessage = (e: MessageEvent<MainToWorker>) => {
 
     case 'RESET': {
       nes.reset()
+      applyStandardPalette()
       prevController1 = 0
       controller1Bits = 0
       frameStartTime = performance.now()

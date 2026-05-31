@@ -1,4 +1,5 @@
 import { useEmulatorStore } from '../store/emulatorStore'
+import './FPSDisplay.css'
 
 export default function FPSDisplay() {
   const fps = useEmulatorStore((s) => s.fps)
@@ -6,24 +7,10 @@ export default function FPSDisplay() {
 
   if (status !== 'running' && status !== 'paused') return null
 
+  const tone = fps >= 58 ? 'good' : fps >= 45 ? 'warn' : 'bad'
+
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: '10px',
-        right: '14px',
-        padding: '3px 10px',
-        background: 'rgba(0, 0, 0, 0.55)',
-        borderRadius: '8px',
-        color: fps >= 58 ? '#88ff88' : fps >= 45 ? '#ffcc44' : '#ff6666',
-        fontFamily: 'var(--font-pixel)',
-        fontSize: '13px',
-        fontWeight: 700,
-        zIndex: 20,
-        pointerEvents: 'none',
-        userSelect: 'none',
-      }}
-    >
+    <div className={`fps-display fps-display--${tone}`} aria-label={`帧率 ${fps} FPS`}>
       {fps} fps
     </div>
   )

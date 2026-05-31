@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { ROMInfo } from '../types/emulator'
+import type { ROMListItem } from '../utils/db'
 
 export type EmulationStatus = 'idle' | 'loading' | 'running' | 'paused'
 
@@ -12,6 +13,9 @@ export interface EmulatorState {
   // 当前 ROM
   currentROM: { name: string; info: ROMInfo } | null
 
+  // ROM 库
+  recentROMs: ROMListItem[]
+
   // UI 状态
   notification: string | null
   controlsVisible: boolean
@@ -21,6 +25,7 @@ export interface EmulatorState {
   setFps: (fps: number) => void
   incrementFrame: () => void
   setCurrentROM: (rom: { name: string; info: ROMInfo } | null) => void
+  setRecentROMs: (roms: ROMListItem[]) => void
   showNotification: (msg: string) => void
   dismissNotification: () => void
   setControlsVisible: (visible: boolean) => void
@@ -31,6 +36,7 @@ export const useEmulatorStore = create<EmulatorState>((set) => ({
   fps: 0,
   frameCount: 0,
   currentROM: null,
+  recentROMs: [],
   notification: null,
   controlsVisible: true,
 
@@ -38,6 +44,7 @@ export const useEmulatorStore = create<EmulatorState>((set) => ({
   setFps: (fps) => set({ fps }),
   incrementFrame: () => set((s) => ({ frameCount: s.frameCount + 1 })),
   setCurrentROM: (rom) => set({ currentROM: rom }),
+  setRecentROMs: (roms) => set({ recentROMs: roms }),
   showNotification: (msg) => set({ notification: msg }),
   dismissNotification: () => set({ notification: null }),
   setControlsVisible: (visible) => set({ controlsVisible: visible }),

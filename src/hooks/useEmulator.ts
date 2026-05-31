@@ -2,12 +2,15 @@ import { useRef, useCallback, useEffect } from 'react'
 import type { MainToWorker, WorkerToMain } from '../types/emulator'
 import { NES_WIDTH, NES_HEIGHT } from '../types/emulator'
 import { useEmulatorStore } from '../store/emulatorStore'
-import { putSaveState, getSaveState, getLatestSaveState } from '../utils/db'
+import { putSaveState, getSaveState, getLatestSaveState, putROM, getROM, listROMs, deleteROM } from '../utils/db'
 
 export interface UseEmulatorReturn {
   canvasRef: React.RefObject<HTMLCanvasElement | null>
   loadROM: (file: File) => void
   loadROMFromBuffer: (buffer: ArrayBuffer, name: string) => void
+  loadROMFromLibrary: (name: string) => Promise<void>
+  deleteROMFromLibrary: (name: string) => Promise<void>
+  refreshRecentROMs: () => Promise<void>
   pause: () => void
   resume: () => void
   reset: () => void
@@ -28,7 +31,7 @@ export function useEmulator(): UseEmulatorReturn {
 
   const {
     setStatus, setFps, incrementFrame,
-    setCurrentROM, showNotification,
+    setCurrentROM, setRecentROMs, showNotification,
   } = useEmulatorStore()
 
   // ============================================================
@@ -39,6 +42,15 @@ export function useEmulator(): UseEmulatorReturn {
       new URL('../worker/emulator.worker.ts', import.meta.url),
       { type: 'module' },
     )
+
+    const refreshRecentROMs = async (): Promise<void> => {
+      try {
+        const roms = await listROMs()
+        setRecentROMs(roms)
+      } catch (err) {
+        console.error('Failed to load ROM list:', err)
+      }
+    }
 
     // ResizeObserver 替代每帧读取 clientWidth/Height，避免强制 layout
     const resizeObserver = new ResizeObserver(() => {
@@ -166,6 +178,7 @@ export function useEmulator(): UseEmulatorReturn {
     }
 
     workerRef.current = worker
+    void refreshRecentROMs()
 
     // 监听键盘输入事件（来自 useInput hook）
     const handleInput = (e: Event) => {
@@ -196,11 +209,31 @@ export function useEmulator(): UseEmulatorReturn {
     }
   }, [])
 
+  const refreshRecentROMs = useCallback(async () => {
+    try {
+      const roms = await listROMs()
+      setRecentROMs(roms)
+    } catch (err) {
+      console.error('Failed to load ROM list:', err)
+      showNotification('ROM 列表读取失败')
+    }
+  }, [setRecentROMs, showNotification])
+
   const loadROMFromBuffer = useCallback((buffer: ArrayBuffer, name: string) => {
     romNameRef.current = name
     setStatus('loading')
-    postToWorker({ type: 'LOAD_ROM', rom: buffer }, [buffer])
-  }, [postToWorker, setStatus])
+
+    const bufferForWorker = buffer
+    putROM(name, buffer.slice(0))
+      .then(() => refreshRecentROMs())
+      .catch((err) => {
+        console.error('Failed to save ROM:', err)
+        showNotification('ROM 已加载，但保存到列表失败')
+      })
+      .finally(() => {
+        postToWorker({ type: 'LOAD_ROM', rom: bufferForWorker }, [bufferForWorker])
+      })
+  }, [postToWorker, refreshRecentROMs, setStatus, showNotification])
 
   const loadROM = useCallback((file: File) => {
     const reader = new FileReader()
@@ -212,6 +245,32 @@ export function useEmulator(): UseEmulatorReturn {
     }
     reader.readAsArrayBuffer(file)
   }, [loadROMFromBuffer, showNotification])
+
+  const loadROMFromLibrary = useCallback(async (name: string) => {
+    try {
+      const buffer = await getROM(name)
+      if (!buffer) {
+        showNotification('ROM 不存在或已删除')
+        await refreshRecentROMs()
+        return
+      }
+      loadROMFromBuffer(buffer, name)
+    } catch (err) {
+      console.error('Failed to load ROM from library:', err)
+      showNotification('ROM 读取失败')
+    }
+  }, [loadROMFromBuffer, refreshRecentROMs, showNotification])
+
+  const deleteROMFromLibrary = useCallback(async (name: string) => {
+    try {
+      await deleteROM(name)
+      await refreshRecentROMs()
+      showNotification('ROM 已从列表删除')
+    } catch (err) {
+      console.error('Failed to delete ROM:', err)
+      showNotification('ROM 删除失败')
+    }
+  }, [refreshRecentROMs, showNotification])
 
   const pause = useCallback(() => {
     postToWorker({ type: 'PAUSE' })
@@ -255,6 +314,9 @@ export function useEmulator(): UseEmulatorReturn {
     canvasRef,
     loadROM,
     loadROMFromBuffer,
+    loadROMFromLibrary,
+    deleteROMFromLibrary,
+    refreshRecentROMs,
     pause,
     resume,
     reset,

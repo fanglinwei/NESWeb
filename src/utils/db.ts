@@ -15,6 +15,12 @@ interface ROMRecord {
   createdAt: number;
 }
 
+export interface ROMListItem {
+  name: string;
+  size: number;
+  createdAt: number;
+}
+
 let dbInstance: IDBDatabase | null = null;
 
 function openDB(): Promise<IDBDatabase> {
@@ -262,9 +268,7 @@ export async function getROM(name: string): Promise<ArrayBuffer | null> {
   });
 }
 
-export async function listROMs(): Promise<
-  Array<{ name: string; size: number; createdAt: number }>
-> {
+export async function listROMs(): Promise<ROMListItem[]> {
   const db = await openDB();
 
   return new Promise((resolve, reject) => {
@@ -274,12 +278,14 @@ export async function listROMs(): Promise<
     const request = store.getAll();
 
     request.onsuccess = () => {
-      const results = (request.result as ROMRecord[]).map((record) => ({
-        name: record.name,
-        size: record.data.byteLength,
-        createdAt: record.createdAt,
-      }));
-      resolve(results);
+      const results = (request.result as ROMRecord[])
+        .map((record) => ({
+          name: record.name,
+          size: record.data.byteLength,
+          createdAt: record.createdAt,
+        }))
+        .sort((a, b) => b.createdAt - a.createdAt)
+      resolve(results)
     };
 
     request.onerror = () => {
