@@ -31,8 +31,8 @@ export default function TouchGamepad({ onInput }: TouchGamepadProps) {
   ]
 
   const metaButtons: ButtonDef[] = [
-    { label: 'SELECT', button: NES_BUTTON.SELECT, cssClass: '', ariaLabel: 'Select' },
-    { label: 'START',  button: NES_BUTTON.START,  cssClass: '', ariaLabel: 'Start' },
+    { label: '−', button: NES_BUTTON.SELECT, cssClass: '', ariaLabel: 'Select' },
+    { label: '+', button: NES_BUTTON.START,  cssClass: '', ariaLabel: 'Start' },
   ]
 
   const actionButtons: ButtonDef[] = [
@@ -69,50 +69,52 @@ export default function TouchGamepad({ onInput }: TouchGamepadProps) {
         }
       }}
     >
-      {/* D-Pad */}
-      <div className="touch-gamepad__dpad">
-        {dPadButtons.map((btn) => (
-          <button
-            key={btn.label}
-            type="button"
-            className={`touch-gamepad__dpad-btn ${btn.cssClass}`}
-            aria-label={btn.ariaLabel}
-            {...makeHandlers(btn.button)}
-          >
-            {btn.label}
-          </button>
-        ))}
-        <div className="touch-gamepad__dpad-btn touch-gamepad__dpad-center" />
+      {/* Left: D-Pad */}
+      <div className="touch-gamepad__left">
+        <div className="touch-gamepad__dpad">
+          {dPadButtons.map((btn) => (
+            <button
+              key={btn.label}
+              type="button"
+              className={`touch-gamepad__dpad-btn ${btn.cssClass}`}
+              aria-label={btn.ariaLabel}
+              {...makeHandlers(btn.button)}
+            >
+              {btn.label}
+            </button>
+          ))}
+          <div className="touch-gamepad__dpad-btn touch-gamepad__dpad-center" />
+        </div>
       </div>
 
-      {/* Meta Buttons (Select / Start) */}
-      <div className="touch-gamepad__meta">
-        {metaButtons.map((btn) => (
-          <button
-            key={btn.label}
-            type="button"
-            className="touch-gamepad__meta-btn"
-            aria-label={btn.ariaLabel}
-            {...makeHandlers(btn.button)}
-          >
-            {btn.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Action Buttons (A / B) — diagonal NES layout */}
-      <div className="touch-gamepad__actions">
-        {actionButtons.map((btn) => (
-          <button
-            key={btn.label}
-            type="button"
-            className={`touch-gamepad__action-btn ${btn.cssClass}`}
-            aria-label={btn.ariaLabel}
-            {...makeHandlers(btn.button)}
-          >
-            {btn.label}
-          </button>
-        ))}
+      {/* Right: A/B (top) + Select/Start (bottom) — Switch style */}
+      <div className="touch-gamepad__right">
+        <div className="touch-gamepad__actions">
+          {actionButtons.map((btn) => (
+            <button
+              key={btn.label}
+              type="button"
+              className={`touch-gamepad__action-btn ${btn.cssClass}`}
+              aria-label={btn.ariaLabel}
+              {...makeHandlers(btn.button)}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+        <div className="touch-gamepad__meta">
+          {metaButtons.map((btn) => (
+            <button
+              key={btn.label}
+              type="button"
+              className="touch-gamepad__meta-btn"
+              aria-label={btn.ariaLabel}
+              {...makeHandlers(btn.button)}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )

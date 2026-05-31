@@ -208,12 +208,13 @@ export default function App() {
               </span>
             </div>
 
-            <div className="app__game-stage">
-              <GameCanvas canvasRef={canvasRef} onDropROM={handleDropROM} />
-            </div>
-
-            <div className="app__gamepad-area">
-              <TouchGamepad onInput={handleTouchInput} />
+            <div className="app__game-main">
+              <div className="app__gamepad-area">
+                <TouchGamepad onInput={handleTouchInput} />
+              </div>
+              <div className="app__game-stage">
+                <GameCanvas canvasRef={canvasRef} onDropROM={handleDropROM} />
+              </div>
             </div>
 
             <div className="app__toolbar-area">

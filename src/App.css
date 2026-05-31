@@ -345,16 +345,27 @@
   font-size: 10px;
 }
 
-.app__game-stage {
+/* Game main row: gamepad + canvas side by side */
+.app__game-main {
   flex: 1;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   min-height: 0;
 }
 
-/* === Desktop Toolbar Area === */
+.app__game-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* === Toolbar Area === */
 .app__toolbar-area {
   flex-shrink: 0;
   display: flex;
@@ -379,23 +390,22 @@
 
   .app__game {
     display: grid;
-    grid-template-rows: auto 1fr auto auto;
+    grid-template-rows: auto 1fr auto;
     grid-template-areas:
       'hud'
-      'canvas'
-      'gamepad'
+      'main'
       'toolbar';
     align-items: stretch;
-    gap: 6px;
-    padding: calc(var(--safe-top) + 4px) 10px calc(var(--safe-bottom) + 6px);
+    gap: 4px;
+    padding: calc(var(--safe-top) + 4px) 8px calc(var(--safe-bottom) + 6px);
   }
 
   .app__game-hud {
     grid-area: hud;
   }
 
-  .app__game-stage {
-    grid-area: canvas;
+  .app__game-main {
+    grid-area: main;
   }
 
   .app__toolbar-area {
@@ -403,7 +413,11 @@
   }
 
   .app__gamepad-area {
-    grid-area: gamepad;
+    flex-shrink: 0;
+  }
+
+  .app__game-stage {
+    flex: 1;
   }
 }
 
@@ -424,26 +438,28 @@
 
   .app__game {
     display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-template-areas: 'left canvas right';
-    align-items: center;
-    gap: 8px;
-    padding: 4px 8px;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'hud'
+      'main'
+      'toolbar';
+    gap: 4px;
+    padding: 2px 6px;
   }
 
   .app__game-hud {
-    display: none;
+    grid-area: hud;
   }
 
-  .app__game-stage {
-    grid-area: canvas;
+  .app__game-main {
+    grid-area: main;
   }
 
   .app__gamepad-area {
-    grid-area: left;
+    flex-shrink: 0;
   }
 
   .app__toolbar-area {
-    grid-area: right;
+    grid-area: toolbar;
   }
 }
