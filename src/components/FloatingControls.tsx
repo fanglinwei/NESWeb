@@ -7,6 +7,7 @@ interface FloatingControlsProps {
   onReset: () => void
   onSaveState: (slot: number) => void
   onFullscreen: () => void
+  onSettings: () => void
 }
 
 export default function FloatingControls({
@@ -15,6 +16,7 @@ export default function FloatingControls({
   onReset,
   onSaveState,
   onFullscreen,
+  onSettings,
 }: FloatingControlsProps) {
   const status = useEmulatorStore((s) => s.status)
   const controlsVisible = useEmulatorStore((s) => s.controlsVisible)
@@ -77,6 +79,13 @@ export default function FloatingControls({
           aria-label="Fullscreen"
         >
           ⛶
+        </button>
+        <button
+          className="floating-controls__btn"
+          onClick={onSettings}
+          aria-label="Settings"
+        >
+          ⚙
         </button>
       </div>
     </div>

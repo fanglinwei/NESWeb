@@ -223,6 +223,7 @@ export default function App() {
                 onReset={reset}
                 onSaveState={saveState}
                 onFullscreen={handleFullscreen}
+                onSettings={() => setSettingsOpen(true)}
               />
             </div>
           </div>
