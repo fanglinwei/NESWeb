@@ -5,7 +5,6 @@ import { useGamepad } from './hooks/useGamepad'
 import { useEmulatorStore } from './store/emulatorStore'
 import GameCanvas from './components/GameCanvas'
 import FloatingControls from './components/FloatingControls'
-import FPSDisplay from './components/FPSDisplay'
 import NotificationToast from './components/NotificationToast'
 import TouchGamepad from './components/TouchGamepad'
 import SettingsModal from './components/SettingsModal'
@@ -24,6 +23,7 @@ export default function App() {
   } = useEmulator()
 
   const status = useEmulatorStore((s) => s.status)
+  const fps = useEmulatorStore((s) => s.fps)
   const currentROM = useEmulatorStore((s) => s.currentROM)
   const recentROMs = useEmulatorStore((s) => s.recentROMs)
   const setControlsVisible = useEmulatorStore((s) => s.setControlsVisible)
@@ -199,7 +199,7 @@ export default function App() {
         {(status === 'running' || status === 'paused') && (
           <div className="app__game">
             <div className="app__game-hud">
-              <span style={{ color: 'var(--color-accent)' }}>FPS: —</span>
+              <span style={{ color: 'var(--color-accent)' }}>FPS: {fps}</span>
               <span style={{ color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)', fontSize: '9px' }}>
                 {currentROM?.name ?? '—'}
               </span>
@@ -237,7 +237,6 @@ export default function App() {
         </span>
       </div>
 
-      <FPSDisplay />
       <NotificationToast />
 
       <SettingsModal
