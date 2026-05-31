@@ -3,29 +3,30 @@
 .touch-gamepad {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
   width: 100%;
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
+  padding: 0 4px;
 }
 
 /* === D-Pad === */
 .touch-gamepad__dpad {
   display: grid;
-  grid-template-columns: repeat(3, 48px);
-  grid-template-rows: repeat(3, 48px);
-  gap: 2px;
+  grid-template-columns: repeat(3, 42px);
+  grid-template-rows: repeat(3, 42px);
+  gap: 1px;
 }
 
 .touch-gamepad__dpad-btn {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius-sm);
   background: rgba(0, 200, 255, 0.06);
   border: 1px solid rgba(0, 200, 255, 0.15);
   color: rgba(0, 200, 255, 0.40);
-  font-size: 18px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,21 +55,23 @@
 .touch-gamepad__dpad-down  { grid-column: 2; grid-row: 3; }
 .touch-gamepad__dpad-center { grid-column: 2; grid-row: 2; }
 
-/* === Meta Buttons (Select / Start) === */
+/* === Meta Buttons (Select / Start) — classic NES center position, slightly lower === */
 .touch-gamepad__meta {
   display: flex;
-  gap: 12px;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
 }
 
 .touch-gamepad__meta-btn {
-  padding: 8px 16px;
+  padding: 5px 12px;
   border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.04);
   color: var(--color-text-muted);
   font-family: var(--font-label);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 1px;
   cursor: pointer;
@@ -83,18 +86,14 @@
   box-shadow: 0 0 10px rgba(0, 200, 255, 0.15);
 }
 
-/* === Action Buttons (A / B) === */
+/* === Action Buttons (B/A) — classic NES horizontal layout === */
 .touch-gamepad__actions {
-  position: relative;
-  width: 100px;
-  height: 100px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
 }
 
 .touch-gamepad__action-btn {
-  position: absolute;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -109,10 +108,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* B button — upper-right (pink) */
+/* B button — left (pink) */
 .touch-gamepad__action-b {
-  top: 0;
-  right: 8px;
   border: 2px solid rgba(255, 51, 102, 0.45);
   background: linear-gradient(135deg, rgba(255, 51, 102, 0.28), rgba(255, 51, 102, 0.10));
   color: var(--color-destructive);
@@ -128,10 +125,8 @@
   transform: scale(0.95);
 }
 
-/* A button — lower-left (cyan) */
+/* A button — right (cyan) */
 .touch-gamepad__action-a {
-  bottom: 0;
-  left: 8px;
   border: 2px solid rgba(0, 200, 255, 0.45);
   background: linear-gradient(135deg, rgba(0, 200, 255, 0.28), rgba(0, 200, 255, 0.10));
   color: var(--color-primary);
@@ -157,36 +152,40 @@
 /* === Mobile Portrait === */
 @media (max-width: 428px) and (orientation: portrait) {
   .touch-gamepad {
-    padding: 4px 8px;
+    padding: 6px 4px;
   }
 }
 
 /* === Mobile Landscape === */
 @media (max-height: 430px) and (orientation: landscape) {
   .touch-gamepad__dpad {
-    grid-template-columns: repeat(3, 44px);
-    grid-template-rows: repeat(3, 44px);
+    grid-template-columns: repeat(3, 38px);
+    grid-template-rows: repeat(3, 38px);
   }
 
   .touch-gamepad__dpad-btn {
-    width: 44px;
-    height: 44px;
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+
+  .touch-gamepad__action-btn {
+    width: 42px;
+    height: 42px;
     font-size: 16px;
   }
 
   .touch-gamepad__actions {
-    width: 85px;
-    height: 85px;
+    gap: 8px;
   }
 
-  .touch-gamepad__action-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 16px;
+  .touch-gamepad__meta {
+    margin-top: 8px;
+    gap: 4px;
   }
 
   .touch-gamepad__meta-btn {
-    padding: 6px 12px;
-    font-size: 10px;
+    padding: 4px 10px;
+    font-size: 9px;
   }
 }
