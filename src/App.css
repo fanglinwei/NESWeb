@@ -1,51 +1,449 @@
+/* === App Shell === */
+
 .app {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* === Dropzone (空状态) === */
-.app__dropzone {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.app__dropzone-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 40px 60px;
-  text-align: center;
+  overflow: hidden;
 }
 
-/* === Loading === */
+/* === Header Bar === */
+.app__header {
+  flex-shrink: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--safe-top) + 8px) var(--space-md) 6px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.app__header-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--color-primary);
+  text-shadow: 0 0 12px var(--color-primary);
+  padding: 5px 14px;
+  border: 1px solid rgba(0, 204, 255, 0.10);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 10, 25, 0.60);
+}
+
+/* === Status Ticker === */
+.app__ticker {
+  flex-shrink: 0;
+  width: 100%;
+  padding: 4px 16px calc(var(--safe-bottom) + 4px);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--color-text-dim);
+  z-index: 10;
+  pointer-events: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.app__ticker-text {
+  display: inline-block;
+  letter-spacing: 1px;
+}
+
+/* === Main Content Area === */
+.app__content {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* === Idle State: Drop Zone === */
+.app__idle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: var(--space-lg);
+}
+
+.app__idle-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: min(420px, 100%);
+  padding: var(--space-xl) var(--space-lg);
+  gap: var(--space-md);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: rgba(10, 21, 48, 0.50);
+  box-shadow: var(--shadow-card);
+  animation: idleFadeIn 300ms ease-out both;
+}
+
+@keyframes idleFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.app__idle-icon {
+  font-size: 44px;
+  filter: drop-shadow(0 0 12px rgba(0, 204, 255, 0.3));
+}
+
+.app__idle-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: 4px;
+  color: var(--color-primary);
+  text-shadow: 0 0 16px var(--color-primary), 0 0 40px rgba(0, 204, 255, 0.3);
+}
+
+.app__idle-subtitle {
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--color-text-muted);
+}
+
+.app__idle-dropzone {
+  width: 100%;
+  padding: var(--space-xl) var(--space-md);
+  border: 2px dashed rgba(0, 200, 255, 0.20);
+  border-radius: var(--radius-md);
+  background: rgba(0, 200, 255, 0.02);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-dim);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.app__idle-dropzone:hover {
+  border-color: var(--color-border-active);
+  background: rgba(0, 200, 255, 0.04);
+}
+
+.app__idle-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+/* === Buttons === */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 24px;
+  border: 1px solid rgba(0, 255, 136, 0.40);
+  border-radius: var(--radius-full);
+  background: linear-gradient(180deg, rgba(0, 255, 136, 0.22), rgba(0, 255, 136, 0.08));
+  color: var(--color-accent);
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary:hover {
+  border-color: rgba(0, 255, 136, 0.60);
+  background: linear-gradient(180deg, rgba(0, 255, 136, 0.30), rgba(0, 255, 136, 0.12));
+  box-shadow: var(--shadow-glow-green);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text-muted);
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-ghost:hover {
+  border-color: rgba(0, 200, 255, 0.30);
+  background: rgba(0, 200, 255, 0.06);
+  color: var(--color-primary);
+}
+
+/* === Recent ROMs List === */
+.app__recent {
+  width: 100%;
+  margin-top: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.app__recent-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.app__recent-header h3 {
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--color-primary);
+  letter-spacing: 2px;
+}
+
+.app__recent-header span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-dim);
+}
+
+.app__recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.app__recent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.app__recent-row:hover {
+  border-color: var(--color-border-strong);
+  background: rgba(0, 200, 255, 0.05);
+  box-shadow: 0 0 12px rgba(0, 200, 255, 0.06);
+}
+
+.app__recent-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app__recent-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.app__recent-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-dim);
+}
+
+.app__recent-delete {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 51, 102, 0.12);
+  color: var(--color-destructive);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.app__recent-delete:hover {
+  background: rgba(255, 51, 102, 0.25);
+  box-shadow: 0 0 8px rgba(255, 51, 102, 0.2);
+}
+
+/* === Loading State === */
 .app__loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  font-weight: 600;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
 }
 
-/* === Game === */
+.app__loading-text {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: var(--color-primary);
+  text-shadow: 0 0 16px var(--color-primary);
+  animation: loadingPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+/* === Game State === */
 .app__game {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #0d0d1a;
+  gap: var(--space-sm);
+  padding: 8px 16px calc(var(--safe-bottom) + 8px);
 }
 
-.app__game canvas {
-  max-width: 100%;
-  max-height: 100%;
+.app__game-hud {
+  flex-shrink: 0;
+  width: min(100%, 720px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.app__game-stage {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* === Desktop Toolbar Area === */
+.app__toolbar-area {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 4px;
+}
+
+/* === Mobile Portrait (iPhone 17: 402×874pt) === */
+@media (max-width: 428px) and (orientation: portrait) {
+  .app__idle-card {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .app__idle-title {
+    font-size: 18px;
+    letter-spacing: 3px;
+  }
+
+  .app__idle-subtitle {
+    font-size: 12px;
+  }
+
+  .app__game {
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+      'hud'
+      'canvas'
+      'gamepad'
+      'toolbar';
+    align-items: stretch;
+    gap: 6px;
+    padding: calc(var(--safe-top) + 4px) 10px calc(var(--safe-bottom) + 6px);
+  }
+
+  .app__game-hud {
+    grid-area: hud;
+  }
+
+  .app__game-stage {
+    grid-area: canvas;
+  }
+
+  .app__toolbar-area {
+    grid-area: toolbar;
+  }
+
+  .app__gamepad-area {
+    grid-area: gamepad;
+  }
+}
+
+/* === Mobile Landscape (iPhone 17: 874×402pt) === */
+@media (max-height: 430px) and (orientation: landscape) {
+  .app__header {
+    padding: 2px var(--space-md) 2px;
+  }
+
+  .app__header-title {
+    font-size: 8px;
+    padding: 3px 10px;
+  }
+
+  .app__ticker {
+    display: none;
+  }
+
+  .app__game {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: 'left canvas right';
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+  }
+
+  .app__game-hud {
+    display: none;
+  }
+
+  .app__game-stage {
+    grid-area: canvas;
+  }
+
+  .app__gamepad-area {
+    grid-area: left;
+  }
+
+  .app__toolbar-area {
+    grid-area: right;
+  }
 }
